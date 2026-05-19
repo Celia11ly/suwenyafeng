@@ -24,11 +24,22 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // ── Init saved settings ──
     let saved = JSON.parse(localStorage.getItem('suwen_api') || '{}');
+    
     // Auto-fix the cached image model if it's the old invalid one
     if (saved.imageModel === 'doubao-seedream-3-0-t2i-250415') {
         saved.imageModel = 'ep-20260519235613-pxd69';
-        localStorage.setItem('suwen_api', JSON.stringify(saved));
     }
+    
+    // Check if there is a magic key in the URL (e.g., ?k=019b...)
+    const urlParams = new URLSearchParams(window.location.search);
+    const magicKey = urlParams.get('k');
+    if (magicKey) {
+        saved.key = magicKey;
+        // Remove it from the URL bar instantly for security/cleanliness
+        window.history.replaceState({}, document.title, window.location.pathname);
+    }
+    
+    localStorage.setItem('suwen_api', JSON.stringify(saved));
     
     if (saved.baseUrl) $('apiBaseUrl').value = saved.baseUrl;
     if (saved.textModel) $('apiTextModel').value = saved.textModel;
