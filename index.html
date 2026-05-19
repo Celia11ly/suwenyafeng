@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>素问·养生图文创作工坊</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;500;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="background-decorations">
+        <div class="blob blob-1"></div>
+        <div class="blob blob-2"></div>
+        <div class="blob blob-3"></div>
+    </div>
+
+    <div class="container">
+        <!-- Header -->
+        <header>
+            <div class="logo">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" stroke="var(--primary)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                <span>素问·雅风</span>
+            </div>
+            <h1>养生图文创作工坊</h1>
+            <p>输入主题 → 审核提示词 → 复制给 LLM 或直接调用 AI 生成精美图文。</p>
+        </header>
+
+        <!-- ============ STEP 1: Input ============ -->
+        <section class="card step-section" id="step1">
+            <div class="step-badge">第一步</div>
+            <h2 class="section-title">选择主题与结构</h2>
+
+            <div class="form-group">
+                <label for="topicInput">养生主题</label>
+                <input type="text" id="topicInput" placeholder="例如：春季养肝、熬夜修复、脾胃调理" autocomplete="off">
+            </div>
+
+            <div class="form-group">
+                <label>生成图片张数</label>
+                <div class="radio-group">
+                    <label class="radio-card"><input type="radio" name="imageCount" value="4" checked><span class="card-content"><span class="count">4张</span><span class="desc">经典宫格</span></span></label>
+                    <label class="radio-card"><input type="radio" name="imageCount" value="6"><span class="card-content"><span class="count">6张</span><span class="desc">进阶方法</span></span></label>
+                    <label class="radio-card"><input type="radio" name="imageCount" value="8"><span class="card-content"><span class="count">8张</span><span class="desc">深度方案</span></span></label>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>配文风格</label>
+                <div class="radio-group">
+                    <label class="radio-card"><input type="radio" name="copyStyle" value="xiaohongshu" checked><span class="card-content"><span class="count">📕</span><span class="desc">小红书风格</span></span></label>
+                    <label class="radio-card"><input type="radio" name="copyStyle" value="douyin"><span class="card-content"><span class="count">🎵</span><span class="desc">抖音风格</span></span></label>
+                    <label class="radio-card"><input type="radio" name="copyStyle" value="wechat"><span class="card-content"><span class="count">💬</span><span class="desc">公众号长文</span></span></label>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>风格参考（可选：垫图）</label>
+                <p class="field-hint">上传一张您喜欢的排版参考图，或粘贴图片链接，AI 会学习其风格。</p>
+                <div class="ref-image-area">
+                    <div class="ref-upload-zone" id="refUploadZone">
+                        <input type="file" id="refImageInput" accept="image/*" hidden>
+                        <div class="upload-placeholder" id="uploadPlaceholder">
+                            <svg width="32" height="32" viewBox="0 0 24 24" fill="none"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M17 8l-5-5-5 5M12 3v12" stroke="#A0ABA0" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                            <span>点击或拖拽上传参考图</span>
+                        </div>
+                        <img id="refPreview" class="ref-preview hidden" alt="参考图预览">
+                        <button id="removeRefBtn" class="remove-ref-btn hidden" title="移除参考图">✕</button>
+                    </div>
+                    <div class="ref-url-row">
+                        <input type="text" id="refImageUrl" placeholder="或粘贴图片 URL（如小红书截图链接）">
+                    </div>
+                </div>
+            </div>
+
+            <button id="generatePromptBtn" class="generate-btn" disabled>
+                <span class="btn-text">生成提示词与配文</span>
+                <svg class="sparkles" width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M12 3l1.5 5 5 1.5-5 1.5L12 16l-1.5-5-5-1.5 5-1.5L12 3z" fill="currentColor"/><path d="M6 14l1 3 3 1-3 1-1 3-1-3-3-1 3-1 1-3z" fill="currentColor"/></svg>
+            </button>
+        </section>
+
+        <!-- ============ STEP 2: Prompt Review ============ -->
+        <section class="card step-section hidden" id="step2">
+            <div class="step-badge">第二步</div>
+            <h2 class="section-title">审核提示词与配文</h2>
+            <p class="section-desc">以下是为您的主题量身定制的"艺术总监级"超级 Prompt 和配文，请审核后选择操作。</p>
+
+            <div class="tabs" id="step2Tabs">
+                <button class="tab-btn active" data-tab="promptReview">绘画提示词</button>
+                <button class="tab-btn" data-tab="copyReview">配文文案</button>
+            </div>
+
+            <div class="tab-content active" id="promptReviewTab">
+                <div class="output-container">
+                    <div id="promptContent" class="output-content"></div>
+                </div>
+            </div>
+            <div class="tab-content" id="copyReviewTab">
+                <div class="output-container">
+                    <div id="copyContent" class="output-content"></div>
+                </div>
+            </div>
+
+            <div class="action-bar">
+                <button id="copyPromptBtn" class="action-btn secondary-btn">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><rect x="9" y="9" width="13" height="13" rx="2" stroke="currentColor" stroke-width="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1" stroke="currentColor" stroke-width="2"/></svg>
+                    复制提示词
+                </button>
+                <button id="copyCopyBtn" class="action-btn secondary-btn">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><rect x="9" y="9" width="13" height="13" rx="2" stroke="currentColor" stroke-width="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1" stroke="currentColor" stroke-width="2"/></svg>
+                    复制配文
+                </button>
+                <button id="goToStep3Btn" class="action-btn primary-btn">
+                    直接生成图片 →
+                </button>
+            </div>
+        </section>
+
+        <!-- ============ STEP 3: Image Generation ============ -->
+        <section class="card step-section hidden" id="step3">
+            <div class="step-badge">第三步</div>
+            <h2 class="section-title">AI 直接生成图文</h2>
+
+            <!-- Model Selection -->
+            <div class="model-selector">
+                <div class="form-group">
+                    <label>选择生图模型</label>
+                    <div class="model-options">
+                        <label class="radio-card model-card">
+                            <input type="radio" name="modelChoice" value="pollinations_flux" checked>
+                            <span class="card-content">
+                                <span class="model-name">Flux (免费)</span>
+                                <span class="desc">Pollinations.ai · 无需 Key</span>
+                            </span>
+                        </label>
+                        <label class="radio-card model-card">
+                            <input type="radio" name="modelChoice" value="puter">
+                            <span class="card-content">
+                                <span class="model-name">Puter.js (免费)</span>
+                                <span class="desc">浏览器端 · 无需 Key</span>
+                            </span>
+                        </label>
+                        <label class="radio-card model-card">
+                            <input type="radio" name="modelChoice" value="custom_openai">
+                            <span class="card-content">
+                                <span class="model-name">自定义 API</span>
+                                <span class="desc">OpenAI / 中转 / 国内</span>
+                            </span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Custom API Settings (hidden by default) -->
+                <div class="custom-api-settings hidden" id="customApiSettings">
+                    <div class="form-row">
+                        <div class="form-group flex-1">
+                            <label for="apiBaseUrl">API Base URL</label>
+                            <input type="text" id="apiBaseUrl" placeholder="https://ark.cn-beijing.volces.com/api/v3" value="https://ark.cn-beijing.volces.com/api/v3">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group flex-1">
+                            <label for="apiTextModel">文本模型 (大语言模型)</label>
+                            <input type="text" id="apiTextModel" placeholder="例如 doubao-seed-2-0-lite-260428" value="doubao-seed-2-0-lite-260428">
+                        </div>
+                        <div class="form-group flex-1">
+                            <label for="apiImageModel">生图模型 (Image Model)</label>
+                            <input type="text" id="apiImageModel" placeholder="需填入您的生图接入点" value="ep-20260519235613-pxd69">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="apiKey">API Key (火山引擎)</label>
+                        <div class="key-input-wrapper">
+                            <input type="password" id="apiKey" value="019b07ef-748e-4f91-b6ce-6a488c1ccc8a">
+                            <button class="toggle-key-btn" id="toggleKeyBtn" title="显示/隐藏密钥">👁</button>
+                        </div>
+                        <small class="hint">密钥已默认配置为火山引擎。模型名称请填写火山方舟的 Endpoint ID (形如 ep-xxxx)。</small>
+                    </div>
+                </div>
+            </div>
+
+            <button id="generateImagesBtn" class="generate-btn">
+                <span class="btn-text">开始逐张生成图片</span>
+                <svg class="sparkles" width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M12 3l1.5 5 5 1.5-5 1.5L12 16l-1.5-5-5-1.5 5-1.5L12 3z" fill="currentColor"/></svg>
+            </button>
+
+            <!-- Progress -->
+            <div class="progress-area hidden" id="progressArea">
+                <div class="progress-text"><span id="progressLabel">准备中...</span></div>
+                <div class="progress-bar-track"><div class="progress-bar-fill" id="progressFill"></div></div>
+            </div>
+
+            <!-- Image Gallery -->
+            <div id="imageGallery" class="image-gallery"></div>
+
+            <!-- Download All -->
+            <button id="downloadAllBtn" class="action-btn secondary-btn download-all-btn hidden">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                一键下载全部图片
+            </button>
+        </section>
+
+        <footer>
+            <p>&copy; 2026 Suwen Brand. All rights reserved.</p>
+        </footer>
+    </div>
+    
+    <div id="toast" class="toast">已复制到剪贴板</div>
+
+    <script src="https://js.puter.com/v2/"></script>
+    <script src="prompts.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
