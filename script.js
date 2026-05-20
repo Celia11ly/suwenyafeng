@@ -360,8 +360,8 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!key) throw new Error('请先填写 API Key');
         
         let size = '1024x1792';
-        // 火山引擎新版 Seedream 至少要求 3686400 像素，所以传 2K
-        if (model.includes('doubao') || model.includes('ep-')) size = '2K'; 
+        // 火山引擎豆包文生图 (Seedream) 3:4 比例的高清分辨率为 1456x2048，比 2K 兼容且精准对齐 3:4 竖图
+        if (model.includes('doubao') || model.includes('ep-')) size = '1456x2048'; 
 
         const resp = await fetch(`${baseUrl}/images/generations`, {
             method: 'POST',
