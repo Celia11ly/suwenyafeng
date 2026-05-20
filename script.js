@@ -282,7 +282,20 @@ document.addEventListener('DOMContentLoaded', () => {
             promptContent.textContent = generatePromptFromData(currentTopic, currentCount, hasRef, currentDynamicData);
             copyContent.textContent = generateCopyTextFromData(currentTopic, currentCount, currentStyle, currentDynamicData);
             
-            // 3. Show Step 2
+            // 3. Render visual card previews
+            renderCardPreviews(currentDynamicData, templateChoice);
+
+            // 4. Reset active Step 2 Tab to the visual preview tab
+            document.querySelectorAll('#step2Tabs .tab-btn').forEach(b => b.classList.remove('active'));
+            document.querySelectorAll('#step2 .tab-content').forEach(c => c.classList.remove('active'));
+            
+            const defaultTabBtn = document.querySelector('#step2Tabs .tab-btn[data-tab="cardPreview"]');
+            if (defaultTabBtn) defaultTabBtn.classList.add('active');
+            
+            const defaultTabContent = $('cardPreviewTab');
+            if (defaultTabContent) defaultTabContent.classList.add('active');
+
+            // 5. Show Step 2
             step2.classList.remove('hidden');
             setTimeout(() => step2.scrollIntoView({ behavior: 'smooth', block: 'start' }), 100);
         } catch (e) {
@@ -466,6 +479,68 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // ── Helpers ──
+    function renderCardPreviews(dynamicData, templateChoice) {
+        const container = $('cardPreviewFlow');
+        container.innerHTML = '';
+        if (!dynamicData || !dynamicData.pages) return;
+
+        // Resolve active theme class
+        let themeClass = 'theme-new_chinese'; // default fallback
+        if (templateChoice === 'new_chinese' || templateChoice === 'wabi_sabi' || templateChoice === 'parchment' || templateChoice === 'modern_magazine') {
+            themeClass = `theme-${templateChoice}`;
+        } else if (templateChoice === 'auto') {
+            themeClass = currentTab === 'herb' ? 'theme-parchment' : 'theme-new_chinese';
+        }
+
+        dynamicData.pages.forEach((page, i) => {
+            const wrapper = document.createElement('div');
+            wrapper.className = 'mini-card-wrapper';
+
+            const card = document.createElement('div');
+            card.className = `mini-card ${themeClass}`;
+
+            // Mini Card Header
+            const header = document.createElement('div');
+            header.className = 'mini-card-header';
+            header.innerHTML = `
+                <span class="mini-card-title">图 ${i + 1}：${page.title}</span>
+                <span class="mini-card-badge">3:4 竖卡</span>
+            `;
+
+            // Mini Card Body
+            const body = document.createElement('div');
+            body.className = 'mini-card-body';
+            
+            const textEl = document.createElement('div');
+            textEl.className = 'mini-card-text';
+            textEl.textContent = page.exact_text || '';
+            body.appendChild(textEl);
+
+            // Mini Card Footer
+            const footer = document.createElement('div');
+            footer.className = 'mini-card-footer';
+            footer.textContent = '素问·雅风美学创作工坊';
+
+            card.appendChild(header);
+            card.appendChild(body);
+            card.appendChild(footer);
+
+            // Details metadata below the card
+            const info = document.createElement('div');
+            info.className = 'mini-card-info';
+            info.innerHTML = `
+                <div class="info-label">📐 排版百分比规划:</div>
+                <div style="font-size: 11px; margin-bottom: 6px;">${page.layout}</div>
+                <div class="info-label">🖼️ 生图英文提示词:</div>
+                <div style="font-size: 10px; font-family: monospace; color: var(--text-muted); word-break: break-all; max-height: 70px; overflow-y: auto; background: rgba(90, 125, 89, 0.04); padding: 6px; border: 1px solid var(--border); border-radius: var(--radius-sm);">${page.img_prompt}</div>
+            `;
+
+            wrapper.appendChild(card);
+            wrapper.appendChild(info);
+            container.appendChild(wrapper);
+        });
+    }
+
     function setBadge(el, type, text) {
         let badge = el.querySelector('.status-badge');
         if (!badge) { badge = document.createElement('span'); badge.className = 'status-badge'; el.querySelector('.gallery-img-wrapper').appendChild(badge); }

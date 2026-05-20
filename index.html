@@ -183,11 +183,17 @@
             <p class="section-desc">以下是为您的主题量身定制的"艺术总监级"超级 Prompt 和配文，请审核后选择操作。</p>
 
             <div class="tabs" id="step2Tabs">
-                <button class="tab-btn active" data-tab="promptReview">绘画提示词</button>
-                <button class="tab-btn" data-tab="copyReview">配文文案</button>
+                <button class="tab-btn active" data-tab="cardPreview">🎴 卡片排版预览</button>
+                <button class="tab-btn" data-tab="promptReview">📝 绘画提示词</button>
+                <button class="tab-btn" data-tab="copyReview">✍️ 配文文案</button>
             </div>
 
-            <div class="tab-content active" id="promptReviewTab">
+            <div class="tab-content active" id="cardPreviewTab">
+                <div class="card-preview-flow" id="cardPreviewFlow">
+                    <!-- Rendered dynamically by script.js -->
+                </div>
+            </div>
+            <div class="tab-content" id="promptReviewTab">
                 <div class="output-container">
                     <div id="promptContent" class="output-content"></div>
                 </div>

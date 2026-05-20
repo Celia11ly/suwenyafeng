@@ -366,3 +366,182 @@ footer { text-align: center; margin-top: 12px; color: #9AA69A; font-size: 13px; 
     .action-bar { flex-direction: column; }
     .workshop-tabs { flex-direction: column; gap: 4px; }
 }
+
+/* ── Card Preview Flow ── */
+.card-preview-flow {
+    display: flex;
+    gap: 20px;
+    overflow-x: auto;
+    padding: 10px 4px 20px 4px;
+    scroll-snap-type: x mandatory;
+    margin-bottom: 10px;
+}
+.card-preview-flow::-webkit-scrollbar { height: 6px; }
+.card-preview-flow::-webkit-scrollbar-track { background: transparent; }
+.card-preview-flow::-webkit-scrollbar-thumb { background: #D0DCD0; border-radius: 10px; }
+
+.mini-card-wrapper {
+    flex: 0 0 260px;
+    scroll-snap-align: start;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+.mini-card {
+    position: relative;
+    width: 260px;
+    height: 346px; /* 3:4 aspect ratio */
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-md);
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    overflow: hidden;
+    transition: var(--transition-smooth);
+    border: 1px solid var(--border);
+    cursor: default;
+    background-size: cover;
+    background-position: center;
+}
+.mini-card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-lg);
+}
+
+/* Template Themes */
+.mini-card.theme-new_chinese {
+    background: #FAF9F5;
+    color: #1C261C;
+    border-color: #E2EAE2;
+}
+.mini-card.theme-new_chinese::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 140px;
+    height: 140px;
+    border: 1px dashed rgba(90, 125, 89, 0.15);
+    border-radius: 50%;
+    pointer-events: none;
+}
+.mini-card.theme-new_chinese .mini-card-title {
+    font-family: 'Noto Serif SC', serif;
+    font-weight: 700;
+    color: var(--primary-dark);
+}
+
+.mini-card.theme-wabi_sabi {
+    background: #E8E4DC;
+    color: #383028;
+    border-color: #D3CDC4;
+}
+.mini-card.theme-wabi_sabi .mini-card-title {
+    font-family: 'Noto Serif SC', serif;
+    font-weight: 700;
+    opacity: 0.85;
+}
+
+.mini-card.theme-parchment {
+    background: #F4EEDF;
+    color: #4A3E30;
+    border: 1px solid rgba(139, 101, 71, 0.25);
+}
+.mini-card.theme-parchment::after {
+    content: '';
+    position: absolute;
+    inset: 6px;
+    border: 1px solid rgba(184, 134, 11, 0.2);
+    pointer-events: none;
+}
+.mini-card.theme-parchment .mini-card-title {
+    font-family: 'Noto Serif SC', serif;
+    font-weight: 700;
+    color: #8B5E3C;
+}
+
+.mini-card.theme-modern_magazine {
+    background: #FFFFFF;
+    color: #1A1A1A;
+    border-color: #EAEAEA;
+}
+.mini-card.theme-modern_magazine .mini-card-title {
+    font-family: 'Inter', sans-serif;
+    font-weight: 700;
+    letter-spacing: -0.5px;
+}
+
+/* Card Elements */
+.mini-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid rgba(0,0,0,0.04);
+    padding-bottom: 8px;
+    z-index: 1;
+}
+.mini-card-title {
+    font-size: 13px;
+    font-weight: 700;
+}
+.mini-card-badge {
+    font-size: 10px;
+    font-weight: 700;
+    padding: 2px 6px;
+    border-radius: 4px;
+    background: rgba(90, 125, 89, 0.1);
+    color: var(--primary-dark);
+}
+.mini-card-body {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    padding: 12px 0;
+    z-index: 1;
+}
+.mini-card-text {
+    font-size: 12px;
+    line-height: 1.7;
+    white-space: pre-wrap;
+    font-family: 'Noto Serif SC', serif;
+    background: rgba(255, 255, 255, 0.85);
+    padding: 12px 16px;
+    border-radius: var(--radius-sm);
+    box-shadow: 0 4px 12px rgba(90, 125, 89, 0.05);
+    border: 1px solid rgba(90, 125, 89, 0.1);
+    max-width: 95%;
+    word-break: break-word;
+    color: var(--text-main);
+}
+.mini-card-footer {
+    font-size: 9px;
+    opacity: 0.6;
+    text-align: center;
+    z-index: 1;
+}
+
+.mini-card-info {
+    font-size: 12px;
+    color: var(--text-muted);
+    line-height: 1.5;
+    padding: 0 4px;
+    background: rgba(255, 255, 255, 0.4);
+    border-radius: var(--radius-sm);
+    padding: 8px 12px;
+    border: 1px dashed var(--border);
+}
+.mini-card-info .info-label {
+    font-weight: 700;
+    color: var(--text-main);
+    margin-top: 6px;
+    margin-bottom: 2px;
+}
+.mini-card-info .info-label:first-child {
+    margin-top: 0;
+}
+
