@@ -85,8 +85,8 @@ async function fetchKnowledgeFromLLM(topic, count, refImages, templateChoice = '
     if (currentTab === 'herb') {
         moduleDirective = `
 
-📢【本草百科专项设计协议（双轨·专属模板轨道）】
-你当前的任务是为单味中药【${topic}】定制一整套极其精美的“中草药本草百科科普卡”。
+📢【本草百科专项设计协议（双轨·超详细大师级模板轨道）】
+你当前的任务是为单味中草药【${topic}】定制一整套极其精美的“中草药本草百科科普卡”。
 你必须扮演中医药权威专家大数据库，在生成 JSON 的每一页前，首先在后台对该本草进行一次硬核、学术级的药典级数据校对，调取其真实的《中国药典》记载：
 - 真实的性味与归经（如：辛、甘，微温。归肾、膀胱经）；
 - 真实的采收季节与月份范围（明确具体月份，如：夏秋二季采收，即6-9月）；
@@ -96,42 +96,54 @@ async function fetchKnowledgeFromLLM(topic, count, refImages, templateChoice = '
 - 经典配伍（包含配伍药材与真实的克数，例如“${topic} 10g + 菟丝子 10g + 五味子 5g”）；
 - 科学日常冲泡煎煮三部曲（明确的水温、器皿、步骤细节参数）。
 
-你生成的页面对象数组（pages）必须刚好包含 ${count} 个页面，严格执行“总图 + 分图”的故事线与构图变奏：
+⚠️【最高级设计要求——严禁任何形式的敷衍与占位符】：
+1. 你绝对不能直接复制模板文字或留白占位符！模板仅作为结构示范。
+2. 你必须发挥你作为30年中医药专家和顶级视觉设计师的毕生所学，针对中草药【${topic}】，在返回的 JSON 中，将所有的药材参数、道地产区、经络走向、药理配伍、冲泡步骤等细节**彻底实体化、学术化、具象化**，100% 填入真实的科学药典数据！
+3. 你的 img_prompt 和 layout 必须极其详细！每一页必须按照以下高水准进行深度内容填充，每一页描述必须有 300+ 字的超高细节密度！
+
+下面是以中草药【桂枝】为例的『黄金标准示范』，你为【${topic}】生成的每一页，都必须达到这种像素级、高密度的学术描述和美学描述水平，绝对不要生成简短敷衍的提示词：
+【桂枝图1完整知识图谱封面（黄金示范）】：
+- title: "中草药完整知识图谱（封面主图）"
+- layout: "画面整体布局自上而下分为五个精密百分比几何区域：① 顶部区域占画面约15%：中央以朱红书法毛笔大字书写「桂枝」二字，字形厚重有力、墨色饱满。正下方一条金色细线横幅，以白色隶书小字注明药典核心功效短语：「发汗解肌·温通经脉·助阳化气·平冲降气」。右上角精细水彩写实插图：绘制桂枝药材真实形态——长圆柱形、多分枝的枝条，表面红棕色至棕色，有纵棱线、细皱纹及小疙瘩状叶痕和芽痕，皮孔点状分布，质硬而脆的质感通过光影精确呈现。药材旁置一只古典青花瓷药罐，罐身绘青花缠枝纹，罐口微露几枝桂枝。顶部描金边框装饰，四角饰以金色如意纹；② 来源制作区占画面约20%：左右对称布局。左侧绘制肉桂植物精细水彩——中等大乔木形态，树皮灰褐色，一年生枝条黑褐色圆柱形，当年生枝条黄褐色呈四棱形、密被灰黄色短绒毛；叶互生或近对生，长椭圆形至近铺针形，革质，上面绿色有光泽，下面淡绿色；花白色细小。右侧以三个步骤绘制制作流程：步骤①「采收」——以手绘场景表现春、夏季（3-8月）剪取嫩枝的画面，采药人在广西山地间剪取肉桂嫩枝；步骤②「去叶晒干」——将采收的嫩枝除去叶片，摊晒于竹席之上；步骤③「切片」——将干燥桂枝切薄片，片厚2-4mm，切面皮部红棕色、木部黄白色至浅黄棕色。三个步骤间以金色箭头串联。区域下方以金色篆书标注道地产区地名：「主产广西、广东、福建、云南」；③ 性味归经功效区占画面约25%：左右对称布局。左侧为中医经络人体轮廓图，以淡墨线描勾勒人体轮廓，三条经络以金色虚线精确标注路径：膀胱经自目内眦上行头顶至足小趾、心经自心中出腋下沿臂内侧至手小指、肺经自中焦出腋下沿臂内侧至手功指，每条经络旁以朱红小字标注经络名。右侧生成4个圆形图标，与桂枝的四项核心功效一一对应：第1圆——「发汗解肌」，圆内绘制药力透达肌表的水彩插图；④ 核心配伍区占画面约25%：背景为深色斑驳漆面，三个小圆形木碟错落有致摆放，第一碟装桂枝10g与白芍10g对药，旁贴带折角的牛皮纸手写标签；⑤ 服用禁忌与免责说明占画面约15%：底部以一条红铜色分割线断开，印刻极其低调淡灰色宋体「温热病及阴虚阳盛忌服。科普说明，内容仅供参考」。"
+- exact_text: "桂枝完整图谱\\n《中国药典》记载 发汗解肌\\n主治风寒感冒·关节痹痛\\n科普说明，内容仅供参考"
+- img_prompt: "An extremely elaborate, high-information-density Traditional Chinese Medicine (TCM) infographic scroll chart. Minimalist oriental aesthetic, aged beige hand-made rice xuan paper scroll texture, Warm aged parchment yellow background. [Top 15% Area]: In the upper center, vertical bold strokes of vermilion calligraphy brush ink characters write the herbal name '桂枝' (Guizhi). Immediately below, a thin elegant golden line banner hosts white clerical script (隶书) reading '发汗解肌·温通经脉·助阳化气·平冲降气'. In the upper right corner, an exquisite watercolor realistic illustration details the branching twigs of Cinnamomum cassia: long cylindrical brownish-red branches with fine longitudinal ridges, small bud scars, and dots of pores. Beside it, a classical porcelain pharmaceutical jar with detailed cobalt blue-and-white scrolling vine patterns, with a few fresh twigs elegantly emerging. Gold-leaf line borders trace the screen top, adorned with delicate golden Ruyi cloud patterns at the corners. [Middle 20% Area]: Symmetrical botanical section. Left side features Cinnamomum cassia tree watercolor botanical plate details: grey-brown bark, leathery shiny oblong-elliptic leaves, tiny white flower details. Right side features a vintage 3-step timeline connected by thin golden arrows: Step 1 shows a delicate watercolor sketch of a farmer hand-harvesting green twigs in a lush mountain; Step 2 displays the twigs sun-drying on a natural bamboo woven tray; Step 3 shows cross-sectional sliced twigs of 2-4mm thickness with red-brown bark and yellowish wood. Underneath, a delicate gold seal script labels '主产广西、广东、福建、云南'. [Lower-Middle 25% Area]: Elegant human meridian diagram. Left: a faint ink-wash outline sketch of a human body silhouette torso, with three glowing golden dashed lines tracing the Bladder, Heart, and Lung meridians with fine vermilion labels. Right: four rustic circular red wooden stamp icons with embossed symbols representing functions. [Bottom-Middle 25% Area]: Three vintage tiny round wooden dishes holding pairing herbs with tiny kraft labels. [Bottom 15% Area]: Elegant thin black warning text and low-key compliance text. Extremely elegant, high information density, over 40% empty breathing space, eye-level medium shot."
+
+你生成的页面对象数组（pages）必须刚好包含 ${count} 个页面，严格执行以下故事线与构图变奏：
 - 图 1：【总图】中草药完整知识图谱（封面主图）
-  - layout: "画面为竖版新中式信息图谱。顶部15%区域为朱红毛笔书法大字标题 + 功效金色横幅；20%来源制作区左右对称布局（原植物精细插画+3步采收）；25%性味归经区（淡墨线描经络循行图+金色虚线标注路径）；25%核心配伍区（平铺小木盘+配伍连线网）；15%服用禁忌与底部低调的免责科普说明。"
-  - exact_text: "「${topic}」完整图谱\\n功效与配伍详解\\n科普说明，内容仅供参考"
-  - img_prompt: "A comprehensive traditional Chinese medicine infographic chart scroll. High-end New Chinese style, antique beige hand-made paper scroll. [Top 15%]: A vertical soft beige column containing red expressive vertical calligraphy brush font of '${topic}'. [Upper-middle 20%]: Botanical illustration of fresh ${topic} plant alongside raw dried medicine, labeled with tiny flags. [Lower-middle 25%]: An ink-wash line drawing sketch of a human body silhouette outline, displaying three specific meridian lines as subtle glowing golden dashed trails. [Bottom-middle 25%]: Three vintage small wooden dishes displaying pairing herbs with tiny kraft labels. [Bottom 15%]: A dark red border area at the very bottom containing clean sans-serif text. Labeled with elegant thin black characters. Highly-detailed watercolor illustrations, extremely elegant, high information density, over 40% empty breathing space, eye-level medium shot."
+  - layout: 必须采用百分比精密几何分割布局（如上文【桂枝图1黄金示范】）。详细指明各个百分比区域（顶部15%、来源制作20%、性味归经25%、经典配伍25%、服用禁忌与免责15%）的画面分布与视觉细节，严禁使用粗略或敷衍描述！
+  - exact_text: 中草药主标题（例如「${topic}」完整图谱）、药典记载的核心功效短语（例如“《本草纲目》记载 蔬中佳品\\n温中和胃 发汗解表”）、免责声明，多行以 \\n 折行。必须为具体真实的医学文字，杜绝占位符！
+  - img_prompt: 极其详尽的英文图谱描述（300+单词）。包含古典宣纸画轴底色、顶部朱红书法体标题、右上角原植物及干药材水彩图、中部淡墨线描人体经络循行图（包含该药具体的经络，如生姜的肺/脾/胃经）、下部三组经典配伍碟子与牛皮纸标签、底部安全警告。
 
 - 图 2：【分图】来源采收与道地产区
-  - layout: "左右非对称分栏。左侧40%为新鲜原植物植物学水彩特写，右侧60%展示干燥药材实物陈列与3步采摘制作工艺。文字优雅印在牛皮纸克数便签纸上。"
-  - exact_text: "来源与采收制作\\n道地：[真实道地产区]\\n[真实采收月份及3步简短制作步骤]\\n科普说明，内容仅供参考"
-  - img_prompt: "A detailed split-card focusing on botanical source. High-end New Chinese aesthetic, cream beige paper texture. Left 40%: exquisite watercolor botanical illustration of fresh growing green ${topic} plant with detailed leaves and fresh colorful fruits. Right 60%: micro-shot of dried ${topic} herbal pieces displayed in a clean shallow sandy-clay pot, next to a folded kraft paper tag with delicate thin handwriting of harvesting steps. Pure warm side lighting, medium-shot, clear edge margins, massive blank space."
+  - layout: 左右非对称分栏。左侧40%为该中药新鲜原植物的精细植物学水彩特写（详尽描述茎、叶、花、果的真实形态特征），右侧60%展示干燥药材切片实物陈列与3步具体的采摘制作工艺。文字优雅印在带克数的折角牛皮纸便签纸上。
+  - exact_text: 真实的来源与采收数据。必须去掉中括号，填入真实数据！格式如：“来源与采收制作\\n道地：[真实的道地产区，如四川、宁夏等]\\n采收：[真实的采收月份及3步具体干燥/炮制步骤]\\n科普说明，内容仅供参考”
+  - img_prompt: 极高清晰度的药材来源微距场景（300+单词）。左侧40%：精致的手绘水彩学术插图，展示生长中的新鲜【${topic}】植株细节（如生姜的披针形长叶与淡黄色花序）。右侧60%：粗陶碟子中整齐平铺的干燥【${topic}】饮片细节（真实的外观形态，如生姜为纵切薄片，表面灰黄色，带皱缩纹理，质硬而脆）。盘旁立有微型折角牛皮纸便签，上面有细钢笔字书写的采收步骤，温暖柔和的侧向窗光影，大面积留白。
 
 - 图 3：【分图】性味归经与经络系统
-  - layout: "极简对称排版。左侧展现精细淡墨线描的人体经络轮廓图，三条主要归经以金色虚线精确标出循行路径。右侧竖向排列4个朱红色的圆形功效小图标与物理绑定文字。"
-  - exact_text: "性味：[药典性味]\\n归经：[药典归经]\\n核心功效：\\n[4个核心功效词]\\n科普说明，内容仅供参考"
-  - img_prompt: "An elegant TCM meridian chart. Light beige parchment paper background. Left side: an artistic ink-line hand-drawn human body torso silhouette, with three active meridian lines glowing as subtle golden dotted light paths. Right side: four vintage circular red wooden seal-like icons containing abstract symbols representing functions of ${topic}. Very clean minimalist presentation, thin fine lines, balanced asymmetric layout, over 50% breathing empty space."
+  - layout: 左右对称/非对称几何分割。左侧展现精细淡墨线描的人体经络轮廓图，该中药所归的2-3条主要经络以金色虚线精确标出循行路径。右侧竖向排列4个朱红色/金色的圆形功效图标与文字。
+  - exact_text: 真实归经与核心功效。必须去掉中括号，填入真实数据！格式如：“性味：[真实的药典性味]\\n归经：[真实的归经，如归肺、胃、脾经]\\n核心功效：[4个真实的核心主治功效短语]\\n科普说明，内容仅供参考”
+  - img_prompt: 艺术感极高的人体经络与草药气机图（300+单词）。复古米黄色背景。左侧：淡墨线描勾勒优雅的中医人体经络轮廓，精准绘制该中药涉及的特定经络（如生姜的足太阴脾经、足阳明胃经、手太阴肺经）呈发光的金色虚线路径。右侧：四个朱红色中国风圆木戳印章，里面是浮雕感的设计图案。四周留出大面积空白，干净高雅。
 
 - 图 4：【分图】经典配伍与食疗衍生对药
-  - layout: "画面为精美平铺陈列网格。背景为朴素雅致的亚麻布背景。画面中散落陈列着3组经典的配伍中草药药材，每组材料盛放在一个精致的小木碟中，碟旁贴有一张微型的、带折角的克数牛皮纸标签纸，上面印有准确的药名和克数。"
-  - exact_text: "经典配伍与克数配比\\n[配方1名称与克数]\\n[配方2名称与克数]\\n[配方3名称与克数]\\n科普说明，内容仅供参考"
-  - img_prompt: "A beautiful herbal pairing layout. Raw coarse linen fabric backdrop with neutral rustic textures. Three vintage tiny round wooden dishes are artistically scattered on the surface, each holding a different combination of dry raw pairing herbs. Next to each wooden dish, there is a miniature folded kraft paper tag with delicate thin handwriting of herb names and weights in grams. Labeled clearly. Warm moody side shadow, elegant high-end design, extremely detailed."
+  - layout: 画面为精美的平铺陈列网格。背景为朴素雅致的亚麻布背景或原木桌面。画面中陈列着3组该中药的经典配伍，每组药材盛放在一个精致的微型小木碟中，碟旁贴有一张微型的、带折角的克数牛皮纸标签纸，上面印有准确的配伍药名和克数。
+  - exact_text: 真实经典配伍公式。必须去掉中括号，填入真实数据！格式如：“经典配伍与克数配比\\n[配方一，如：${topic} 10g + 炙甘草 5g]\\n[配方二，如：${topic} 10g + 大枣 15g]\\n[配方三]\\n科普说明，内容仅供参考”
+  - img_prompt: 极富空间层次的配伍陈列静物照（300+单词）。以粗糙质感的古朴亚麻布为背景，三只精致的小圆形深色木质碟子呈几何三角形散落，里面分别盛装三种具体的干燥配伍药材。每一碟旁边放置一片折角的小牛皮纸便签，上面以细黑墨水手写着药名与克数。极柔和的自然窗光，四周保留安全边距。
 
 - 图 5：【分图】科学冲泡或煎煮三部曲（代茶饮特写）
-  - layout: "画面上方60%展现特写茶饮陈列（精致茶具中澄澈的茶水，散发着袅袅热气）。画面下方40%为干净宣纸底色块的留白背景，居中印着3步科学日常冲泡或煎煮步骤。茶碗旁必须自然散落散发当前药材特征的主体物。"
-  - exact_text: "日常代茶饮冲泡法\\n[步骤1：配量与90度水温]\\n[步骤2：闷泡/煎煮时间]\\n[步骤3：温服饮用频次]\\n科普说明，内容仅供参考"
-  - img_prompt: "A cozy hot herbal tea preparation scene. Warm moody side lighting. On the upper 60%: A delicate transparent glass cup or blue-and-white porcelain Gaiwan filled with clear hot [特定茶汤颜色，如红褐色/淡黄绿色] tea, gentle wisps of steam floating upward. Next to the tea set, a few fresh and raw dried pieces of '${topic}' (like its botanical morphology fruits/slices) are naturally scattered on the dark wooden tray. Lower 40%: perfectly clean blank beige paper banner for text. Medium shot, elegant premium aesthetic, no clutter."
+  - layout: 画面上方60%展现特写代茶饮陈列（精致的青瓷盖碗、玻璃杯或紫砂壶中澄澈的茶水，散发着袅袅热气）。画面下方40%为干净宣纸底色块的留白背景，居中印着3步具体的冲泡或煎煮步骤参数。茶碗旁自然散落该药材的新鲜或干燥标本。
+  - exact_text: 日常科学服用步骤。必须去掉中括号，填入真实数据！格式如：“日常代茶饮冲泡法\\n1. 配量：[真实的食材与水量]\\n2. 焖泡：[具体的温度与时间]\\n3. 服法：[具体的饮用频次与温服要求]\\n科普说明，内容仅供参考”
+  - img_prompt: 充满意境的代茶饮茶道场景（300+单词）。上部 60%：一个古典白瓷盖碗（Gaiwan）或透亮玻璃盏中盛满温润澄澈的【${topic}】茶汤，呈现其真实茶色（如浅黄温润的淡黄绿色），热蒸汽（vapor wisps）如薄雾般轻柔升腾。茶盏周围自然散落着几片切得极薄的【${topic}】饮片标本。下部 40%：大面积的米白色极干净背景，高低调对比。
 
 - 图 6：【分图】避坑指南与服用注意事项
-  - layout: "极简古典信笺排版。四周有一圈极细的暗金色中式纹样细线边框。页面中央是干净的淡米黄色宣纸，使用极纤细小巧的圆圈（○）作为 Checkbox 排列4条精练的忌服注意事项。禁忌文字采用深朱红色。"
-  - exact_text: "忌服与注意事项\\n[禁忌1：不适人群]\\n[禁忌2：饮食禁忌]\\n[禁忌3：合理用量]\\n科普说明，内容仅供参考"
-  - img_prompt: "An elegant minimalist notice card. Aged light yellow rice-paper sheet framed by a very thin antique golden border. At the center, neat rows of text in vertical or horizontal alignments, featuring small elegant circular bullet points (○). Extremely minimalist layout, breathing aesthetic, massive blank background space, very clean and clinical."
+  - layout: 极简古典信笺排版。四周有一圈极细的暗金色中式纹样细线边框。页面中央是干净的淡米黄色宣纸，使用极纤细小巧的圆圈（○）作为 Checkbox 排列4条真实的忌服、配伍禁忌或服用注意事项。禁忌文字采用深朱红色。
+  - exact_text: 真实的禁忌事项。必须去掉中括号，填入真实数据！格式如：“忌服与注意事项\\n[真实忌服体质，如阴虚火旺者忌服]\\n[真实的食物相克或饮食禁忌]\\n[真实的每日安全用量上限]\\n科普说明，内容仅供参考”
+  - img_prompt: 极其高雅极简的医嘱信笺图（300+单词）。古宣纸纹理背景，带有一圈精致极细的暗金色中式回字纹边框。页面正中大面积留白，上面用细秀的宋体汉字整齐地以（○）为项目符号列出几行朱红色的用药警告。光影微弱侧向投射，极致宁静。
 
 ${toxicHerb ? `⚠️ 有毒中药安全加页 Page 7:
 - title: "安全用药与规范炮制说明"
-- layout: "上部深朱红色粗边框警示区，下部浅米色炮制用量说明。"
-- exact_text: "安全用药与规范炮制说明\\n${toxicHerb}有毒，须遵医嘱\\n[规范炮制及先煎久煎步骤]\\n科普说明，内容仅供参考"
-- img_prompt: "A rigorous clinical caution notice card. A dark red vintage border enclosing an elegant beige parchment. An antique herbalist scale and a brass medicine mortar are placed on a rustic wooden desk, with an open pharmaceutical scroll displaying clear calligraphy labels. Strict formal layout, red clay seal stamp, clean space for text, over 45% white space."` : ''}
+- layout: "画面上方为深朱红色粗边框警示区，印有「有毒中药安全警告」；下方为浅米色宣纸背景，印有科学炮制和先煎久煎的详细说明。"
+- exact_text: "安全用药与规范炮制说明\\n${toxicHerb}有毒，须遵医嘱\\n炮制：[具体的炮制减毒方法]\\n煎服：[具体的煎煮方法如先煎久煎]\\n科普说明，内容仅供参考"
+- img_prompt: "A rigorous, authoritative clinical warning card. A bold deep red vintage border framing a sheet of light beige herbal paper scroll. On a dark rustic wooden table, an ancient copper pharmaceutical scale and a heavy brass mortar and pestle are placed. Nearby, an open classical medical handbook scroll displays red caution text labels. Sharp studio spotlight focusing on the scale, strong shadows, extremely formal and professional composition, over 40% breathing empty space."` : ''}
 `;
     } else {
         moduleDirective = `
@@ -139,33 +151,39 @@ ${toxicHerb ? `⚠️ 有毒中药安全加页 Page 7:
 📢【经典养生图文卡专项设计协议（双轨·美学与排版策略精髓轨道）】
 你当前的任务是生成一套关于【${topic}】的精美养生科普图文卡（共 ${count} 张图）。
 你绝对不能生搬硬套任何中药的归经、采收和药典学术层，但你必须**全盘汲取 PDF 方法论的视觉排版与提示词策略精髓**，彻底升级经典卡的干货和视觉档次：
-1. **干货内容极致具体化（拒绝空话）**：经典卡不再输出泛泛的“规律作息、合理饮食”等废话，而是根据分类美学（节气养生/脏腑调理/痛点修复/经络养护），规划出包含**具体养生食材克数（如百合 10g + 莲子 15g）、具体的身体穴位名称、具体的作息时辰以及具体的调理步骤**。
-2. **百分比几何分割与构图变奏**：绝不允许每一页的排版千篇一律。在 \`layout\` 中精确设计版面分割（如：图1封面大面积极简留白与圆格取景；图2自测清单采用记事本复古排版与细引线；图3食疗配方左右非对称双栏，下部贴折角牛皮纸克数便签；图4养生步骤采用 1|2|3 竖排时间轴与超大半透明宋体底纹数字）。
+1. **干货内容极致具体化（拒绝空话）**：经典卡不再输出“规律作息、合理饮食”等废话，而是根据分类美学（节气养生/脏腑调理/痛点修复/经络养护），规划出包含**具体养生食材克数（如百合 10g + 莲子 15g）、具体的身体穴位名称、具体的作息时辰以及具体的调理步骤**。
+2. **百分比几何分割与构图变奏**：绝不允许每一页的排版千篇一律。在 \`layout\` 中精确用百分比设计版面分割：
+   - **Page 1 (封面页)**: 顶部15%留白毛笔字，中部65%为极简意境大物（如圆窗竹影、完美的茶盏碟子），下部20%为小字和副标题。留白率超过50%。
+   - **Page 2 (痛点自测清单)**: 左右对称分栏或单栏信纸。左侧15%为细长的红线分割，右侧85%为带（○）Checkbox的4条具体身体不适症状。
+   - **Page 3 (食疗经典对药方)**: 上部60%为食材实物平铺，小碟子装白百合与红枣，碟旁是手写克数便签；下部40%为大字食材克数公式。
+   - **Page 4 (日常微习惯/经络穴位揉按)**: 1|2|3 时间轴或左右分栏。左侧绘制抽象的穴位局部轮廓与太冲穴/三阴交穴，右侧是揉按步骤及“按揉3分钟，局部酸胀为度”。
+   - **Page 5 (养生误区大避坑)**: 左右对称的双栏高反差卡片，左栏「误区」（配有红叉和小木牌），右栏「正解」（配有绿勾和宣纸标签）。
+   - **Page 6 (养生寄语与名言)**: 右下角摊开的线装古书，左上角大片留白处印着金色的传统养生谚语。
 3. **文字与视觉实体的空间对齐物理绑定（Label-Mapping）**：在 \`layout\` 和 \`img_prompt\` 中，明确把具体的中文文字（如“三阴交穴 揉按3分钟”）物理绑定在画面中的“折角牛皮纸克数便签”、“小木牌吊坠”、“青花瓷瓷签”或“淡墨印痕宣纸条”上，指挥生图模型把字精准印在上面。
-4. **强效防漂移锚定物**：在每一页的生图 Prompt 中强行锁定当期养生主题的核心具体实物（如“春季养肝”的\`热气腾腾绿豆百合粥，旁边散落着鲜绿的绿豆与白色百合片\`），在 prompt 最前端强力加上 \`[Universal Subject Anchor: \${topic}]\`，杜绝任何生成画面的漂移崩溃。
-5. **放宽字数限制与多行 \`\\n\` 优雅折排**：exact_text 字数放宽至 **35~45字**。禁止大长句，必须使用 \`\\n\` 进行多行折行（每行 8~12 字以内），呈规整优雅的几何板块，与图片中的便签或横幅物理融合。
+4. **强效防漂移锚定物**：在每一页的生图 Prompt 中强行锁定当期养生主题的核心具体实物（如“春季养肝”的\`热气腾腾绿豆百合粥，旁边散落着鲜绿的绿豆与白色百合片\`），在 prompt 最前端强力加上 \`[Universal Subject Anchor: ${topic}]\`，杜绝任何生成画面的漂移崩溃。
+5. **放宽字数限制与多行 \`\\\\n\` 优雅折排**：exact_text 字数放宽至 **35~45字**。禁止大长句，必须使用 \`\\\\n\` 进行多行折行（每行 8~12 字以内），呈规整优雅的几何板块，与图片中的便签或横幅物理融合。
 `;
     }
 
     const systemPrompt = `你是一位拥有30年临床经验的中医主任医师，也是顶级社交媒体（小红书/抖音等）大健康与东方美学领域的视觉创意总监与艺术主编。
-用户会给出一个大健康或中药主题，你需要为其量身定制 \${count} 张极具艺术感、高档设计感、完全不雷同的小红书系列套图内容与一篇爆款笔记文案。
+用户会给出一个大健康或中药主题，你需要为其量身定制 ${count} 张极具艺术感、高档设计感、完全不雷同的小红书系列套图内容与一篇爆款笔记文案。
 
-📢 当前垫图状态：【\${hasRef ? "⚠️已上传参考图 - 必须执行【高保真复刻模式】" : "✨未上传参考图 - 必须执行【自主创意设计模式】"}】\${styleDirective}\${moduleDirective}
+📢 当前垫图状态：【${hasRef ? "⚠️已上传参考图 - 必须执行【高保真复刻模式】" : "✨未上传参考图 - 必须执行【自主创意设计模式】"}】${styleDirective}${moduleDirective}
 
-根据当前的垫图状态，请你严格执行以下分支设计逻辑，展示你作为顶级艺术总监 of 视觉控制力与卓越设计天赋：
+根据当前的垫图状态，请你严格执行以下分支设计逻辑，展示你作为顶级艺术总监的视觉控制力与卓越设计天赋：
 
 ==================================================
 分支 A：【高保真复刻模式】（当已上传参考图时执行）
 ==================================================
-1. **像素级提取与复刻排版**：你必须成为一名精密的视觉排版解码器。仔细解构用户提供的一张或多张参考图，并在返回的 JSON 的 global_style、每一页的 layout 和 img_prompt 中深度复刻它的排版与陈列精髓：
+1. **像素级提取与复刻排版**：你必须成为一名精密的视觉排版解码器。仔细解构用户提供的一张或多张参考图，并在返回 of JSON 的 global_style、每一页的 layout 和 img_prompt 中深度复刻它的排版与陈列精髓：
    * **智能过滤社交平台截图（如小红书整页截图）**：
      ⚠️【极其重要】：用户上传的参考图往往是直接从小红书、抖音等社交平台上截取的整页浏览器/手机截图。这类的典型特点是：左半部分是笔记主图，而右半部分是点赞收藏栏、评论区、作者头像、笔记文本等社交 UI 侧边栏。你必须具备智能视觉过滤能力，彻底忽略右半部分的社交侧边栏、文字或评论，将注意力 100% 集中在左半部分（或图片主要展示区）的卡片排版上！提取其斜向碟子、牛皮纸标签、纵向标题等实际图片中的精美陈列，千万不要被右半部分的侧边栏评论所干扰！
    * **排版陈列与构图**：解构并精准复刻参考图的陈列。例如，如果原图是“左下角斜排小碟子装食材并带有小牛皮纸克数卡片标签，右下角一碗绿豆浆并有勺子舀起”，你就必须在每一页的英文陈列描述（img_prompt）中，100% 写入这种高保真的“小碟子、牛皮纸便签标签、勺子舀起”的画面指令！
    * **多图一对一对应复刻（多图顺序学习）**：当用户上传了多张参考图时，它们代表了整个套图里每一页的排版流。你必须将“第1张参考图的排版与陈列”赋予生成的第一页“Page 1”，“第2张参考图的排版与陈列”对应“Page 2”，以此类推。每一页都深度还原各自对应的参考图排版。
    * **单图输入下的“风格同源，排版多样”延展机制**：
-     ⚠️【特别注意】：如果用户只上传了1张参考图，但需要生成 \${count} 张卡片。你绝对不能让这 \${count} 张卡片都长得一模一样！你必须将第一页（Page 1）作为主封面，高保真复刻该参考图的全部排版。从第二页（Page 2）开始，你必须提取参考图的“色调、光影、字体风格和特有装饰元素（如牛皮纸签、斜向木碟）”作为全局基调，但是主动为后续页面变换排版布局（例如 Page 2 极简奶油色卡片分栏，Page 3 上下分栏，Page 4 居中卡片框），既保证了同一套图的“风格绝对统一”，又实现了“排版极其丰富、呼吸感高、档次高”。
+     ⚠️【特别注意】：如果用户只上传了1张参考图，但需要生成 ${count} 张卡片。你绝对不能让这 ${count} 张卡片都长得一模一样！你必须将第一页（Page 1）作为主封面，高保真复刻该参考图的全部排版。从第二页（Page 2）开始，你必须提取参考图的“色调、光影、字体风格和特有装饰元素（如牛皮纸签、斜向木碟）”作为全局基调，但是主动为后续页面变换排版布局（例如 Page 2 极简奶油色卡片分栏，Page 3 上下分栏，Page 4 居中卡片框），既保证了同一套图的“风格绝对统一”，又实现了“排版极其丰富、呼吸感高、档次高”。
 2. **文字密度对齐**：
-   * 如果参考图非常极简，图上字极少，你的 exact_text 也必须极简，把做法和原理都入文案！
+   * 如果参考图非常极简，图上字极少，你的 exact_text 也必须极简，把做法和原理都写入文案！
    * 必须对 exact_text 里的中文做极简化精简提炼，使用 \\n 进行优雅换行折排，放宽字数限制至 35~45 字。
 
 ==================================================
@@ -177,14 +195,14 @@ ${toxicHerb ? `⚠️ 有毒中药安全加页 Page 7:
      - 视觉色系与光影：春（Sage green/亚麻白）；夏（荷粉/冰玉绿）；秋（麦芽金/陶土褐）；冬（石墨黑/奶油白）。
      - 排版故事线：第1页艺术意境封面大面积留白；第2页节气指南细线双栏网格；第3页食疗茶饮斜向碟子+牛皮纸折角便签；第4页养生功法卡片。
    * 🍲 【分类二：单一本草食材科普 (Single Herb/Ingredient)】
-     - 视觉色系与光影：Aged parchment yellow, natural clay brown, and raw wood tones。温暖柔和暗调侧光。
+     - 视觉色系与光影：Warm aged parchment yellow, natural clay brown, and raw wood tones。温暖柔和暗调侧光。
      - 排版故事线：按照【本草百科专项设计协议】的 6+1 故事线严密生成。
    * 💤 【分类三：痛点修复与亚健康调理 (Symptom Recovery)】
      - 视觉色系与光影：Serene dusk purple, lavender gray, and clean warm white。治愈散光。
      - 排版故事线：第1页温馨治愈大碗茶封面；第2页Checkbox痛点自测清单；第3页救急代茶饮方平铺碟子旁的小牛皮标签；第4页日常温馨叮咛。
    * 🩺 【分类四：传统脏腑调理与经络 (Organ & Meridian Care)】
      - 视觉色系与光影：新中式极简。大面积淡青釉色、米浆白、古宣纸色。
-     - 排版故事线：第1页极简圆瓷盘/圆格取景与毛笔字；第2页经络循行淡墨轮廓金色虚线图；第3页养护三部曲1|2|3竖排时间轴；第4页成品茶盏与古籍名言收尾。
+     - 排版故事线：第1页极简圆瓷盘/圆格取景与毛笔字；第2页经络循行淡墨轮廓金色虚线图；第3页养护三部曲1|2|3慢速时间轴；第4页成品茶盏与古籍名言收尾。
 
 2. **同一套组图，风格高度统一原则**：
    每一张图都必须共享由 'global_style' 确立的全局视觉风格与背景色系，形成强烈的系列套图质感！必须保证统一配色、统一材质（如宣纸/麻布/微粗砂）、统一采光阴影（如穿透竹帘的晨光）、统一相机焦段（50mm）。
@@ -194,8 +212,12 @@ ${toxicHerb ? `⚠️ 有毒中药安全加页 Page 7:
    * 正文：清透纤细的宋体或思源黑体，折行排列。
    * 呼吸感留白：必须保持 >45% 的干净留白背景空间。所有元素内收聚拢在画面中央70%区域，四周边缘留出至少 15% 的绝对安全留白边距！
 
-4. **汉字渲染黄金铁律**：
-   每张图的 exact_text 中文字数放宽至 35~45 字，但必须使用 \\n 进行多行折行，每行小整齐，边缘绝对不能贴近图片边缘。
+4. **大师级英文生图提示词 (img_prompt) 与汉字渲染黄金铁律**：
+   * ⚠️【极其重要】：你生成的每一个 img_prompt 必须在 250 至 400 个英文单词之间，描述极其具体、宏大、高密度！
+   * 必须在其中指明风格锚点（如中国传统水彩工笔插画风格、宣纸质感、Warm aged parchment yellow, natural clay brown等）。
+   * 必须在其中详细指明各个百分比几何区域（如顶部 15%、中部 20%、下部 25% 等）的陈列物体（如新鲜植株、干药材形态、折角便签、人体经络墨线图、三碟茶料、白瓷盖碗、古本草书等）及其具体的颜色、材质、外观质感！
+   * 必须指明中文字体物理绑定的纸签、木牌或横幅。
+   * 中文字数放宽至 35~45 字，但必须使用 \\n 进行多行折行，每行小整齐，边缘绝对不能贴近图片边缘。
 
 📢【免责声明强制渲染协议】
 你必须在每一页卡片的 exact_text 最底部，强制性附带一行极低调的超精炼汉字，并用 \\n 隔开：『科普说明，内容仅供参考』。
@@ -221,9 +243,7 @@ ${toxicHerb ? `⚠️ 有毒中药安全加页 Page 7:
     }
     // ... 必须刚好包含 count 个页面对象
   ]
-}`;
-
-    const modelChoice = document.querySelector('input[name="modelChoice"]:checked')?.value;
+}`;    const modelChoice = document.querySelector('input[name="modelChoice"]:checked')?.value;
     const apiKey = document.getElementById('apiKey')?.value;
 
     if (modelChoice === 'custom_openai') {
