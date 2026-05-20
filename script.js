@@ -16,7 +16,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const progressArea = $('progressArea'), progressLabel = $('progressLabel'), progressFill = $('progressFill');
     const downloadAllBtn = $('downloadAllBtn');
 
-    let currentTopic = '', currentCount = 4, currentStyle = 'xiaohongshu';
+    let currentTopic = '', currentCount = 4, currentStyle = 'xiaohongshu', currentTab = 'classic';
     let refImageDataUrls = [];
     let generatedImages = [];
     let currentDynamicData = null; // Store LLM generated knowledge
@@ -29,12 +29,11 @@ document.addEventListener('DOMContentLoaded', () => {
         saved.imageModel = 'ep-20260519235613-pxd69';
     }
     
-    // Check if there is a magic key in the URL (e.g., ?k=019b...)
+    // Check if there is a magic key in the URL
     const urlParams = new URLSearchParams(window.location.search);
     const magicKey = urlParams.get('k');
     if (magicKey) {
         saved.key = magicKey;
-        // Remove it from the URL bar instantly for security/cleanliness
         window.history.replaceState({}, document.title, window.location.pathname);
     }
     
@@ -45,7 +44,6 @@ document.addEventListener('DOMContentLoaded', () => {
     if (saved.imageModel) $('apiImageModel').value = saved.imageModel;
     if (saved.key) {
         $('apiKey').value = saved.key;
-        // Auto-select custom API since a key is already saved
         const customRadio = document.querySelector('input[name="modelChoice"][value="custom_openai"]');
         if (customRadio) {
             customRadio.checked = true;
@@ -53,7 +51,66 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // ── Tab switching ──
+    // ── Workshop Category Tabs switching ──
+    const workshopTabs = document.querySelectorAll('.workshop-tab');
+    const topicInputLabel = $('topicInputLabel');
+    const imageCountRadios = $('imageCountRadios');
+    const herbCountBadge = $('herbCountBadge');
+    const safetyNotification = $('safetyNotification');
+    const safetyNotificationBody = $('safetyNotificationBody');
+
+    workshopTabs.forEach(tab => {
+        tab.addEventListener('click', () => {
+            workshopTabs.forEach(t => t.classList.remove('active'));
+            tab.classList.add('active');
+            currentTab = tab.dataset.tab;
+            
+            // Adjust form inputs based on selected tab
+            if (currentTab === 'classic') {
+                topicInputLabel.textContent = '养生主题';
+                topicInput.placeholder = '例如：春季养肝、熬夜修复、脾胃调理';
+                imageCountRadios.classList.remove('hidden');
+                herbCountBadge.classList.add('hidden');
+                safetyNotification.classList.add('hidden');
+                // Restore checked count
+                const checkedRadio = document.querySelector('input[name="imageCount"]:checked');
+                currentCount = checkedRadio ? parseInt(checkedRadio.value) : 4;
+            } else if (currentTab === 'herb') {
+                topicInputLabel.textContent = '中药/本草名称';
+                topicInput.placeholder = '例如：枸杞、生姜、艾草、附子（输入有毒中药自动开启安全说明卡）';
+                imageCountRadios.classList.add('hidden');
+                herbCountBadge.classList.remove('hidden');
+                checkToxicHerbOnInput();
+            }
+        });
+    });
+
+    function checkToxicHerbOnInput() {
+        if (currentTab !== 'herb') {
+            safetyNotification.classList.add('hidden');
+            return;
+        }
+        const val = topicInput.value.trim();
+        const toxicHerb = detectToxicHerb(val);
+        if (toxicHerb) {
+            safetyNotificationBody.innerHTML = `检测到本草【<b>${toxicHerb}</b>】具有药典毒性或安全限制。系统已自动启动【安全用药加页机制】，在经典 6 张卡片之外，<b>额外增加 1 张专属的《安全用药与规范炮制说明卡》</b>，以确保用药合规与生命安全。卡片总数已由 6 张调整为 <b>7 张</b>！`;
+            safetyNotification.classList.remove('hidden');
+            currentCount = 7;
+        } else {
+            safetyNotification.classList.add('hidden');
+            currentCount = 6;
+        }
+    }
+
+    // ── Input validation & Toxic Check ──
+    topicInput.addEventListener('input', () => {
+        generatePromptBtn.disabled = !topicInput.value.trim();
+        if (currentTab === 'herb') {
+            checkToxicHerbOnInput();
+        }
+    });
+
+    // ── Tab switching for Step 2 output tabs ──
     document.querySelectorAll('.tabs').forEach(tg => {
         tg.querySelectorAll('.tab-btn').forEach(btn => {
             btn.addEventListener('click', () => {
@@ -65,9 +122,6 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         });
     });
-
-    // ── Input validation ──
-    topicInput.addEventListener('input', () => { generatePromptBtn.disabled = !topicInput.value.trim(); });
 
     // ── Ref image upload ──
     refUploadZone.addEventListener('click', () => refImageInput.click());
@@ -150,8 +204,15 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // ── Model choice ──
-    document.querySelectorAll('input[name="modelChoice"]').forEach(r => { r.addEventListener('change', () => { customApiSettings.classList.toggle('hidden', r.value !== 'custom_openai'); }); });
-    toggleKeyBtn.addEventListener('click', () => { const k = $('apiKey'); k.type = k.type === 'password' ? 'text' : 'password'; });
+    document.querySelectorAll('input[name="modelChoice"]').forEach(r => { 
+        r.addEventListener('change', () => { 
+            customApiSettings.classList.toggle('hidden', r.value !== 'custom_openai'); 
+        }); 
+    });
+    toggleKeyBtn.addEventListener('click', () => { 
+        const k = $('apiKey'); 
+        k.type = k.type === 'password' ? 'text' : 'password'; 
+    });
 
     // ── Visual Template choice ──
     document.querySelectorAll('input[name="visualTemplate"]').forEach(r => {
@@ -163,8 +224,14 @@ document.addEventListener('DOMContentLoaded', () => {
     // ── STEP 1 → STEP 2 (Async LLM Pre-thinking) ──
     generatePromptBtn.addEventListener('click', async () => {
         currentTopic = topicInput.value.trim(); if (!currentTopic) return;
-        currentCount = parseInt(document.querySelector('input[name="imageCount"]:checked').value);
         currentStyle = document.querySelector('input[name="copyStyle"]:checked').value;
+
+        // Count logic based on selected tab
+        if (currentTab === 'herb') {
+            currentCount = detectToxicHerb(currentTopic) ? 7 : 6;
+        } else {
+            currentCount = parseInt(document.querySelector('input[name="imageCount"]:checked').value);
+        }
 
         const templateChoice = document.querySelector('input[name="visualTemplate"]:checked')?.value || 'auto';
         const customStyleDesc = $('customStyleInput')?.value.trim() || '';
@@ -193,7 +260,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const modelChoice = document.querySelector('input[name="modelChoice"]:checked').value;
         if (modelChoice === 'custom_openai') {
-            // Save API settings immediately to localStorage
             localStorage.setItem('suwen_api', JSON.stringify({
                 baseUrl: $('apiBaseUrl').value,
                 textModel: $('apiTextModel').value,
@@ -209,8 +275,8 @@ document.addEventListener('DOMContentLoaded', () => {
         step2.classList.add('hidden');
 
         try {
-            // 1. Fetch dynamic knowledge from selected LLM engine (passing style reference array if present)
-            currentDynamicData = await fetchKnowledgeFromLLM(currentTopic, currentCount, refImages, templateChoice, customStyleDesc);
+            // 1. Fetch dynamic knowledge from selected LLM engine
+            currentDynamicData = await fetchKnowledgeFromLLM(currentTopic, currentCount, refImages, templateChoice, customStyleDesc, currentTab);
             
             // 2. Build Prompts & Copy using dynamic data
             promptContent.textContent = generatePromptFromData(currentTopic, currentCount, hasRef, currentDynamicData);
@@ -232,21 +298,31 @@ document.addEventListener('DOMContentLoaded', () => {
     copyCopyBtn.addEventListener('click', () => clip(copyContent.textContent));
 
     // ── STEP 2 → STEP 3 ──
-    goToStep3Btn.addEventListener('click', () => { step3.classList.remove('hidden'); setTimeout(() => step3.scrollIntoView({ behavior: 'smooth', block: 'start' }), 100); });
+    goToStep3Btn.addEventListener('click', () => { 
+        step3.classList.remove('hidden'); 
+        setTimeout(() => step3.scrollIntoView({ behavior: 'smooth', block: 'start' }), 100); 
+    });
 
     // ── STEP 3: Sequential Generation Queue ──
     generateImagesBtn.addEventListener('click', async () => {
         if (!currentDynamicData) return alert('请先生成提示词！');
         
+        // Dynamically adjust count based on generated page count
+        const actualCount = currentDynamicData.pages.length;
         const modelChoice = document.querySelector('input[name="modelChoice"]:checked').value;
-        const panels = getImagePanelsFromData(currentTopic, currentCount, currentDynamicData);
+        const panels = getImagePanelsFromData(currentTopic, actualCount, currentDynamicData);
         imageGallery.innerHTML = '';
-        imageGallery.setAttribute('data-count', currentCount);
+        imageGallery.setAttribute('data-count', actualCount);
         generatedImages = new Array(panels.length).fill(null);
         downloadAllBtn.classList.add('hidden');
 
         if (modelChoice === 'custom_openai') {
-            localStorage.setItem('suwen_api', JSON.stringify({ baseUrl: $('apiBaseUrl').value, textModel: $('apiTextModel').value, imageModel: $('apiImageModel').value, key: $('apiKey').value }));
+            localStorage.setItem('suwen_api', JSON.stringify({ 
+                baseUrl: $('apiBaseUrl').value, 
+                textModel: $('apiTextModel').value, 
+                imageModel: $('apiImageModel').value, 
+                key: $('apiKey').value 
+            }));
         }
 
         // Build gallery items first
@@ -370,7 +446,6 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!key) throw new Error('请先填写 API Key');
         
         let size = '1024x1792';
-        // 火山引擎豆包文生图 (Seedream) 要求总像素 >= 3,686,400，其标准的 3:4 比例分辨率为 1728x2304
         if (model.includes('doubao') || model.includes('ep-')) size = '1728x2304';  
 
         const resp = await fetch(`${baseUrl}/images/generations`, {

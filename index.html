@@ -32,18 +32,38 @@
             <div class="step-badge">第一步</div>
             <h2 class="section-title">选择主题与结构</h2>
 
-            <div class="form-group">
-                <label for="topicInput">养生主题</label>
-                <input type="text" id="topicInput" placeholder="例如：春季养肝、熬夜修复、脾胃调理" autocomplete="off">
+            <!-- Card Category Workshop Tabs -->
+            <div class="workshop-tabs" id="workshopTabs">
+                <button class="workshop-tab active" data-tab="classic">🌿 经典养生图文卡</button>
+                <button class="workshop-tab" data-tab="herb">🍲 本草百科科普卡</button>
             </div>
 
             <div class="form-group">
+                <label for="topicInput" id="topicInputLabel">养生主题</label>
+                <input type="text" id="topicInput" placeholder="例如：春季养肝、熬夜修复、脾胃调理" autocomplete="off">
+            </div>
+
+            <!-- Dynamic Safety and Compliance Notification -->
+            <div class="safety-notification hidden" id="safetyNotification">
+                <div class="safety-notification-header">
+                    <span class="safety-icon">⚠️</span>
+                    <span class="safety-title">中草药安全合规预警</span>
+                </div>
+                <div class="safety-notification-body" id="safetyNotificationBody">
+                    检测到本草具有一定毒性或安全限制。系统已自动启动【安全用药加页机制】，额外增加1张『安全用药与规范炮制说明卡』。卡片总数已由 6 张自动调整为 7 张。
+                </div>
+            </div>
+
+            <div class="form-group" id="imageCountGroup">
                 <label>生成图片张数</label>
-                <div class="radio-group">
+                <div class="radio-group" id="imageCountRadios">
                     <label class="radio-card"><input type="radio" name="imageCount" value="1"><span class="card-content"><span class="count">1张</span><span class="desc">单图精简</span></span></label>
                     <label class="radio-card"><input type="radio" name="imageCount" value="4" checked><span class="card-content"><span class="count">4张</span><span class="desc">经典宫格</span></span></label>
                     <label class="radio-card"><input type="radio" name="imageCount" value="6"><span class="card-content"><span class="count">6张</span><span class="desc">进阶方法</span></span></label>
                     <label class="radio-card"><input type="radio" name="imageCount" value="8"><span class="card-content"><span class="count">8张</span><span class="desc">深度方案</span></span></label>
+                </div>
+                <div class="herb-count-badge hidden" id="herbCountBadge" style="margin-top: 8px;">
+                    ✨ <b>固定 6 张套图</b> (1张意境本草封面 + 5张细节陈列卡)。如果检测到有毒中药，系统将自动升级为 <b>7 张套图</b> (追加一张《安全用药与规范炮制说明卡》)。
                 </div>
             </div>
 

@@ -275,6 +275,87 @@ footer { text-align: center; margin-top: 12px; color: #9AA69A; font-size: 13px; 
 .template-group { display: grid; grid-template-columns: repeat(6, 1fr); gap: 12px; }
 .hidden { display: none !important; }
 
+/* ── Workshop Tabs ── */
+.workshop-tabs {
+    display: flex;
+    background: rgba(90, 125, 89, 0.06);
+    padding: 6px;
+    border-radius: var(--radius-md);
+    margin-bottom: 28px;
+    border: 1px solid var(--border);
+}
+.workshop-tab {
+    flex: 1;
+    background: none;
+    border: none;
+    padding: 12px 16px;
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--text-muted);
+    cursor: pointer;
+    border-radius: var(--radius-sm);
+    transition: var(--transition-smooth);
+    font-family: inherit;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+}
+.workshop-tab:hover {
+    color: var(--primary);
+}
+.workshop-tab.active {
+    background: var(--surface);
+    color: var(--primary-dark);
+    box-shadow: var(--shadow-sm);
+}
+
+/* ── Safety Notification ── */
+.safety-notification {
+    background: rgba(196, 91, 91, 0.05);
+    border: 1px solid rgba(196, 91, 91, 0.2);
+    border-radius: var(--radius-md);
+    padding: 16px 20px;
+    margin-bottom: 24px;
+    animation: fadeUp 0.3s ease-out;
+}
+.safety-notification-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 6px;
+}
+.safety-icon {
+    font-size: 16px;
+}
+.safety-title {
+    font-weight: 700;
+    color: var(--danger);
+    font-size: 14px;
+}
+.safety-notification-body {
+    font-size: 13px;
+    color: #5C4343;
+    line-height: 1.6;
+}
+
+/* ── Herb Count Badge ── */
+.herb-count-badge {
+    background: rgba(90, 125, 89, 0.04);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    padding: 14px 18px;
+    font-size: 13px;
+    color: var(--text-muted);
+    line-height: 1.6;
+    animation: fadeUp 0.3s ease-out;
+}
+
+.image-gallery[data-count="7"] { grid-template-columns: repeat(2, 1fr); }
+@media (min-width: 640px) {
+    .image-gallery[data-count="7"] { grid-template-columns: repeat(4, 1fr); }
+}
+
 @media (max-width: 640px) {
     .container { padding: 24px 16px; }
     .card { padding: 24px; }
@@ -283,4 +364,5 @@ footer { text-align: center; margin-top: 12px; color: #9AA69A; font-size: 13px; 
     .form-row { flex-direction: column; gap: 0; }
     h1 { font-size: 26px; }
     .action-bar { flex-direction: column; }
+    .workshop-tabs { flex-direction: column; gap: 4px; }
 }
