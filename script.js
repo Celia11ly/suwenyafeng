@@ -370,8 +370,8 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!key) throw new Error('请先填写 API Key');
         
         let size = '1024x1792';
-        // 火山引擎豆包文生图 (Seedream) 3:4 比例的高清分辨率为 1456x2048，比 2K 兼容且精准对齐 3:4 竖图
-        if (model.includes('doubao') || model.includes('ep-')) size = '1456x2048'; 
+        // 火山引擎豆包文生图 (Seedream) 要求总像素 >= 3,686,400，其标准的 3:4 比例分辨率为 1728x2304
+        if (model.includes('doubao') || model.includes('ep-')) size = '1728x2304';  
 
         const resp = await fetch(`${baseUrl}/images/generations`, {
             method: 'POST',
