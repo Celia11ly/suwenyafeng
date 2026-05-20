@@ -153,11 +153,21 @@ document.addEventListener('DOMContentLoaded', () => {
     document.querySelectorAll('input[name="modelChoice"]').forEach(r => { r.addEventListener('change', () => { customApiSettings.classList.toggle('hidden', r.value !== 'custom_openai'); }); });
     toggleKeyBtn.addEventListener('click', () => { const k = $('apiKey'); k.type = k.type === 'password' ? 'text' : 'password'; });
 
+    // ── Visual Template choice ──
+    document.querySelectorAll('input[name="visualTemplate"]').forEach(r => {
+        r.addEventListener('change', () => {
+            $('customStyleArea').classList.toggle('hidden', r.value !== 'custom');
+        });
+    });
+
     // ── STEP 1 → STEP 2 (Async LLM Pre-thinking) ──
     generatePromptBtn.addEventListener('click', async () => {
         currentTopic = topicInput.value.trim(); if (!currentTopic) return;
         currentCount = parseInt(document.querySelector('input[name="imageCount"]:checked').value);
         currentStyle = document.querySelector('input[name="copyStyle"]:checked').value;
+
+        const templateChoice = document.querySelector('input[name="visualTemplate"]:checked')?.value || 'auto';
+        const customStyleDesc = $('customStyleInput')?.value.trim() || '';
 
         // Gather all reference images (uploaded base64 images + direct URLs)
         const refImages = [...refImageDataUrls];
@@ -200,7 +210,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         try {
             // 1. Fetch dynamic knowledge from selected LLM engine (passing style reference array if present)
-            currentDynamicData = await fetchKnowledgeFromLLM(currentTopic, currentCount, refImages);
+            currentDynamicData = await fetchKnowledgeFromLLM(currentTopic, currentCount, refImages, templateChoice, customStyleDesc);
             
             // 2. Build Prompts & Copy using dynamic data
             promptContent.textContent = generatePromptFromData(currentTopic, currentCount, hasRef, currentDynamicData);

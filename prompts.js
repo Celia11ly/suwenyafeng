@@ -3,12 +3,41 @@
 // ==========================================
 
 // ── 1. Dynamic Knowledge & Structure Generation ──
-async function fetchKnowledgeFromLLM(topic, count, refImages) {
+async function fetchKnowledgeFromLLM(topic, count, refImages, templateChoice = 'auto', customStyleDesc = '') {
     const hasRef = Array.isArray(refImages) ? refImages.length > 0 : !!refImages;
+    
+    let styleDirective = '';
+    if (templateChoice === 'custom' && customStyleDesc) {
+        styleDirective = "\n\n📢【最高美学指令：自定义视觉风格优先】\n用户特别指定了自定义风格描述：'" + customStyleDesc + "'。\n请你完全打破默认的四大分类推荐，强行在此套 " + count + " 张图的设计中，100% 融合并贯彻该自定义美学风格（如全局色系、环境材质、采光调性、字体与排版修饰）。\n同时，每一页的构图与实物陈列依旧要在该风格基调下进行多样化的排版变奏（如：封面页、步骤页、清单页、收尾名言页具有完全不同的视觉版式），绝对避免千篇一律！";
+    } else if (templateChoice !== 'auto') {
+        const templates = {
+            'new_chinese': {
+                name: '新中式写意风 (New Chinese Minimalism)',
+                details: '以大面积的淡青釉色、米浆白、古宣纸色为主调，搭配清晨穿透竹帘的条纹柔和光影，营造禅意雅致。字体采用纵向或横向大号“黑色苍劲毛笔书法体”配合“清透纤细的宋体”；背景干净留白（>50%），以写意竹影、圆窗、完美的正圆形瓷盘或圆格取景作为视觉锚点。'
+            },
+            'wabi_sabi': {
+                name: '日式侘寂风 (Wabi-Sabi Aesthetic)',
+                details: '自然粗粝的陶器、黏土色、原木色调、粗砂材质或略带岁月的微瑕器皿。采用温暖柔和的暗调侧光 (Moody side light)，营造静谧、素朴、返璞归真 的自然质感。大面积使用粗麻布、斑驳灰墙作为背景纹理，排版呼吸感极高，偏心对焦。'
+            },
+            'parchment': {
+                name: '古籍本草风 (Antique Herbalist)',
+                details: '古老羊皮纸黄、天然黏土褐、原木色、黄铜色泽。充满历史厚重感、中草药典籍拼贴画的美学调性。画面多采用干燥植物标本微距摄影、草本植物花草素描细线边框、以及牛皮纸质感的克数便签。光影微暗，带有古典医药局的侧向焦度。'
+            },
+            'modern_magazine': {
+                name: '现代极简杂志风 (Modern Minimalist Magazine)',
+                details: '采用莫兰迪色系、冷淡黑白灰或柔和奶油色的微纹理底色。使用极其纤细秀气的现代黑体或思源宋体。排版上采用极富几何感的双栏不对称分割线、大字无底线排版、大比例清凉留白（>50%）、以及圆角卡片分栏。配以极为干净的浅色大理石或石膏背景。'
+            }
+        };
+        const currentTpl = templates[templateChoice];
+        if (currentTpl) {
+            styleDirective = "\n\n📢【最高美学指令：指定美学模板优先】\n用户指定了视觉模板：【" + currentTpl.name + "】。\n请你完全打破默认的四大主题分类自动路由，强行在全套 " + count + " 张图的 global_style、页面 layout 和 img_prompt 中彻底执行以下视觉风格规范：\n" + currentTpl.details + "\n请在贯穿该美学模板的基础上，为这 " + count + " 张图分别设计不同节奏的构图版式（第一页精美意境封面，第二页高低落差陈列/步骤，第三页斜向散落配比，第四页治愈捧杯特写/名言），使组图风格高度统一且排版丰富灵活，充满设计天赋！";
+        }
+    }
+
     const systemPrompt = `你是一位拥有30年临床经验的中医主任医师，也是顶级社交媒体（小红书/抖音等）大健康与东方美学领域的视觉创意总监与艺术主编。
 用户会给出一个大健康或中医养生主题，你需要为其量身定制 ${count} 张极具艺术感、高档设计感、完全不雷同的小红书系列套图内容与一篇爆款笔记文案。
 
-📢 当前垫图状态：【${hasRef ? "⚠️已上传参考图 - 必须执行【高保真复刻模式】" : "✨未上传参考图 - 必须执行【自主创意设计模式】"}】
+📢 当前垫图状态：【${hasRef ? "⚠️已上传参考图 - 必须执行【高保真复刻模式】" : "✨未上传参考图 - 必须执行【自主创意设计模式】"}】${styleDirective}
 
 根据当前的垫图状态，请你严格执行以下分支设计逻辑，展示你作为顶级艺术总监的极致视觉控制力与卓越设计天赋：
 

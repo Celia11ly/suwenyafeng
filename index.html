@@ -57,6 +57,24 @@
             </div>
 
             <div class="form-group">
+                <label>视觉美学风格模板</label>
+                <div class="template-group">
+                    <label class="radio-card"><input type="radio" name="visualTemplate" value="auto" checked><span class="card-content" style="padding: 12px 8px;"><span class="count" style="font-size: 16px;">🌿</span><span class="desc" style="font-weight: 700;">智能辩证推荐</span><span class="desc" style="font-size: 11px; margin-top: 4px; color: var(--text-muted);">根据主题智能匹配排版</span></span></label>
+                    <label class="radio-card"><input type="radio" name="visualTemplate" value="new_chinese"><span class="card-content" style="padding: 12px 8px;"><span class="count" style="font-size: 16px;">🩺</span><span class="desc" style="font-weight: 700;">新中式写意风</span><span class="desc" style="font-size: 11px; margin-top: 4px; color: var(--text-muted);">宣纸白/竹影/苍劲毛笔</span></span></label>
+                    <label class="radio-card"><input type="radio" name="visualTemplate" value="wabi_sabi"><span class="card-content" style="padding: 12px 8px;"><span class="count" style="font-size: 16px;">🍵</span><span class="desc" style="font-weight: 700;">日式侘寂风</span><span class="desc" style="font-size: 11px; margin-top: 4px; color: var(--text-muted);">古拙粗砂/温和侧影光</span></span></label>
+                    <label class="radio-card"><input type="radio" name="visualTemplate" value="parchment"><span class="card-content" style="padding: 12px 8px;"><span class="count" style="font-size: 16px;">🍲</span><span class="desc" style="font-weight: 700;">古籍本草风</span><span class="desc" style="font-size: 11px; margin-top: 4px; color: var(--text-muted);">羊皮纸/黏土褐/典籍感</span></span></label>
+                    <label class="radio-card"><input type="radio" name="visualTemplate" value="modern_magazine"><span class="card-content" style="padding: 12px 8px;"><span class="count" style="font-size: 16px;">💤</span><span class="desc" style="font-weight: 700;">现代极简杂志</span><span class="desc" style="font-size: 11px; margin-top: 4px; color: var(--text-muted);">冷淡双色/莫兰迪灰/圆角</span></span></label>
+                    <label class="radio-card"><input type="radio" name="visualTemplate" value="custom"><span class="card-content" style="padding: 12px 8px;"><span class="count" style="font-size: 16px;">✨</span><span class="desc" style="font-weight: 700;">自由创作/自定义</span><span class="desc" style="font-size: 11px; margin-top: 4px; color: var(--text-muted);">手动输入您的美学偏好</span></span></label>
+                </div>
+            </div>
+
+            <!-- Custom Visual Style Input Box -->
+            <div class="custom-style-input-area hidden" id="customStyleArea" style="margin-top: -12px; margin-bottom: 24px; padding: 18px; background: rgba(90, 125, 89, 0.04); border-radius: var(--radius-md); border: 1px solid var(--border); animation: fadeUp 0.3s ease-out;">
+                <label for="customStyleInput" style="font-size: 13px; font-weight: 700; margin-bottom: 6px; color: var(--text-main);">输入自定义视觉风格描述</label>
+                <input type="text" id="customStyleInput" placeholder="例如：春日马卡龙粉嫩色系，明亮少女感温和光影，轻盈花朵拼贴排版，宋体字体" autocomplete="off" style="font-size: 13px; padding: 10px 14px;">
+            </div>
+
+            <div class="form-group">
                 <label>风格参考（可选：垫图）</label>
                 <p class="field-hint">📸 <b>强烈推荐直接上传排版截图！</b> 网页链接（如小红书链接）因平台防爬虫限制，AI 无法直接读取其图片。<b>支持批量上传多张图：</b>你可以一次性上传多张截图，AI 会按照顺序让“第1张参考图对应图1、第2张对应图2...”，进行多页一对一高保真像素级复刻！</p>
                 <div class="ref-image-area">

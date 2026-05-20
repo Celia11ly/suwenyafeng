@@ -272,10 +272,13 @@ footer { text-align: center; margin-top: 12px; color: #9AA69A; font-size: 13px; 
 @keyframes fadeUp { from{opacity:0;transform:translateY(20px)} to{opacity:1;transform:translateY(0)} }
 
 /* ── Responsive ── */
+.template-group { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+.hidden { display: none !important; }
+
 @media (max-width: 640px) {
     .container { padding: 24px 16px; }
     .card { padding: 24px; }
-    .radio-group, .model-options { grid-template-columns: 1fr; }
+    .radio-group, .model-options, .template-group { grid-template-columns: 1fr; }
     .form-row { flex-direction: column; gap: 0; }
     h1 { font-size: 26px; }
     .action-bar { flex-direction: column; }
