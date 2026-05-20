@@ -4,27 +4,36 @@
 
 // ── 1. Dynamic Knowledge & Structure Generation ──
 async function fetchKnowledgeFromLLM(topic, count, refImage) {
-    const systemPrompt = `你是一位拥有30年临床经验的中医主任医师，同时也是顶级视觉信息图策划师。
-用户会给出一个大健康或中医主题。你需要根据这个具体主题，量身定制 ${count} 张图文卡片的内容。
+    const systemPrompt = `你是一位拥有30年临床经验的中医主任医师，也是顶级社交媒体（小红书/抖音等）大健康领域的美学视觉总监与创意主编。
+用户会给出一个大健康或中医养生主题，你需要为其量身定制 ${count} 张极具艺术感、美感的小红书套图内容与一篇爆款笔记文案。
 
-⚠️ 核心要求：
-1. **拒绝套路化**：不要每次都机械地用“症状自测”、“君臣佐使”、“日常打卡”。请根据具体的主题，灵活决定每一页的结构。例如：
-   - 讲某种“药材”：可以是【功效解析】、【搭配禁忌】、【炮制方法】。
-   - 讲某种“疾病/症状”：可以是【成因分析】、【误区纠正】、【食疗方】。
-   - 讲某个“节气”：可以是【气候特点】、【起居调整】、【当季养生菜】。
-2. **极度专业且具体**：药材必须有具体的克数（如“生姜15g”），动作必须有具体的步骤。绝对不允许出现“请补充”、“适量”等占位符。
-3. 只能输出纯合法的 JSON 字符串，绝对不要包含任何 Markdown 格式（如 \`\`\`json ）。
+⚠️ 核心痛点与文字防乱码『图文分离』原则（最高优先级！）：
+1. AI生图模型（如Flux, Doubao-Seedream, DALL-E等）渲染大量中文字符的能力极其脆弱，过多的中文文字（如具体步骤、大段功效解析、长句说明等）会导致极其严重的错乱、乱码，并且强行分割画面，使整张图显得极其呆板丑陋！
+2. 为了100%确保生成的卡片极度高档、美观且汉字字迹清晰不乱码，你必须严格执行『图文分离，轻装上阵』原则：
+   - ❌ 绝对禁止将具体的“做法步骤”、“多点详细功效”、“调理原理长句”、“大量正文说明”等写入 exact_text。这些内容印在图上是视觉灾难！
+   - 每页图片上印的字（即 exact_text）**必须控制在极少数汉字以内**，且仅允许包含以下三项：
+     * **主标题 (Main Title)**：艺术化大字，3至6个字（例如：“净颜绿豆浆”、“养肝排毒汤”）。要求采用优雅的书法毛笔体风格，纵向排版。
+     * **副标题/修饰句 (Subtitle)**：一句话的核心价值卖点，8至12个字（例如：“清润顺滑·喝出透亮好气色”）。
+     * **微型食材/配料标签 (Labels)**：若有需要，可包含3~4个极其简短的原料名称加克数（例如：“绿豆 40g”、“红枣 3颗”）。在排版中要求将其渲染为“精致青瓷小碗旁边摆放的带有手写字迹的小牛皮纸便签标签”。
+   - 所有详尽的临床调理原理、药材克数做法步骤、调理功效分析、医生专业建议等爆款干货段落，**必须全部（100%）挪入社交媒体配文（social_copy）中**！
+   - 这样，图片能腾出90%的留白进行高颜值的美食摄影/静物写实，仅点缀极简艺术汉字，这才是爆款图文的精髓！
 
-请严格输出以下 JSON 结构：
+⚠️ 风格提取与复刻规则（当存在参考图时）：
+如果用户上传了参考图（refImage 存在），你必须化身顶级视觉解码器，深度解构并完美复刻该图的排版美学与艺术精髓：
+1. **解构并复刻其摆盘与构图设计**：例如参考图“净颜绿豆浆”的精髓是“左下角环状斜向放置一排5个盛满食材原料的浅色青瓷小碟子，每个小碟子旁边各放了一张写有汉字和具体克数的牛皮纸卡片标签；右下方是一碗绿色柔滑的绿豆浆，木勺中舀起一勺绿豆浆；右上方虚化放置白色破壁机背景”。你应该在 global_style 和 pages 的 layout/img_prompt 中将这些高价值的“小碟子、牛皮纸便签、勺子舀起”用极具画面感的英文写出，让生图模型精准复现这种高级陈列感！
+2. **解构并复刻其排版空间与文字层级**：如“主标题大字采用纵向书法毛笔风格写在左上角大面积留白处，副标题用精致的小字纵向书写于其右侧，与右侧的实物摄影形成完美的主次视觉分割”。
+3. **解构并复刻其色彩空间与美学媒介**：如“极简现代东方生活美学（zen aesthetic），奶油风与米白/淡黄/鼠尾草绿色彩空间（cream, sage green），柔和散射的自然侧光（soft window lighting），微距写实美食摄影（macro food photography），干净的大面积留白（>50% white space）”。
+
+请严格输出以下 JSON 结构（绝对只能输出纯合法的 JSON 字符串，绝对不要包含 any Markdown 标记如 \`\`\`json ）：
 {
-  "social_copy": "一段非常吸引人的社交媒体配文（小红书风格，带emoji，分段清晰，结尾带标签）",
-  "global_style": "极其重要的纯英文视觉锚点指令！定义这一整套图的统一视觉媒介、光影、质感、色彩空间（例如：Consistent Kinfolk magazine aesthetic, soft natural window lighting, macro photography on cream linen texture, elegant minimalist zen style. Color palette: Cream and Sage Green）。这个指令将被强制附加到每一张图生图请求中，以保证4张图的画风完全一致。",
+  "social_copy": "一篇高价值、吸引人、排版极佳的社交媒体配文（小红书风格，包含引人瞩目的标题、分点干货【食材准备、精准克数与功效、详细制作步骤、医师贴心叮嘱】、带丰富的emoji，分段清晰，结尾带热门标签）",
+  "global_style": "极其重要的全局英文视觉风格词！定义整套图的统一美学媒介、色彩、光影和质感（需融入从参考图提取的精髓，例如：Consistent minimalist zen food photography, modern Kinfolk style, cream and sage green palette, soft side light, macro depth of field. 50% blank white space for text overlay）。",
   "pages": [
     {
-      "title": "页面小标题，例如：核心功效 / 历史渊源 / 禁忌人群",
-      "layout": "极其详细的排版与空间分布指令（例如：画面分为上下两区，上部35%放置主体图案，下部65%采用左对齐排版文字；标题居中等）。",
-      "exact_text": "必须印在这张图片上的精确中文内容。必须包含主标题、副标题、以及分点正文。务必带精准数据/药材克数。",
-      "img_prompt": "纯英文的单页主体画面提示词，仅描述本页独特的画面内容，必须给文字留出空间（例如：A wooden spoon with fresh lotus seeds placed in the bottom right corner）"
+      "title": "页面小标题（例如：主封面 / 核心选料 / 调理步骤）",
+      "layout": "极其详细的排版与空间分布指令（描述主副标题如何纵向排版，写在哪个留白区域；如果有食材标签，指示其如何作为精致的卡片便签依附在原材料碗旁。例如：Title is written vertically in elegant Songti font on the upper left, taking up 30% space. A shallow bowl of red bean soup sits on the bottom right. 3 small porcelain plates are arranged diagonally on the bottom left, each with a small kraft paper tag showing ingredients like 'Red Bean 30g' in handwriting style. Elegant and extremely balanced spacing.）",
+      "exact_text": "必须印在这张图片上的精确中文内容。请严格遵守防错乱字数限制（仅包含：1个纵向毛笔书法主标题[3-6字]、1个精致副标题[8-12字]、3~4个极简的原料克数标签[如 绿豆 40g]）。绝对不要出现任何多余的做法或长篇功效描述！",
+      "img_prompt": "纯英文的单页主体画面提示词。仅描述本页独特的画面实物与陈列，务必根据风格复刻原则进行高保真描述，并明确指示留出大量大片极简纯色空间用于文字书写（例如：A shallow porcelain bowl filled with smooth red bean soup in the bottom right corner, a wooden spoon scooping it up. Top left and center are pure empty warm cream background. In the bottom left, three tiny ceramic saucers with raw red beans, lotus seeds and barley are arranged, each saucer having a tiny kraft paper tag next to it. Realistic food photography.）"
     }
     // ... 必须刚好包含 ${count} 个页面对象
   ]
@@ -155,11 +164,11 @@ function getImagePanelsFromData(topic, count, d) {
         panels.push({
             title: page.title,
             desc: page.exact_text.substring(0, 20).replace(/\n/g, ' ') + '...',
-            prompt: `【核心任务】生成一张专业的高级中文养生知识海报。画幅比例要求为3:4竖版。
-【全局统一画风强制指令】（保证套图风格完全一致）：${d.global_style}。背景必须有大面积留白（>40%），禁止3D或卡通。
-【本张卡片主视觉】：${page.img_prompt}。图案必须精致且居于合理位置，务必为文字留出足够的排版空间。
-【空间排版布局】：${page.layout}。请严格遵循此空间划分进行构图。
-【必须印在图上的中文文字】：（请使用高级优雅的中文字体：大标题使用宋体/明朝体，正文使用黑体/无衬线体。字迹必须清晰、排版必须对齐，绝对禁止火星文或拼音乱码）
+            prompt: `【核心任务】生成一张专业的高级新中式健康养生知识卡片。画幅比例要求为3:4竖版。
+【全局画风强制美学指令】：${d.global_style}。背景必须有干净优雅的大面极简留白空间，禁止任何3D、卡通或低档修饰。
+【单页主视觉与陈列布局】：${page.img_prompt}。
+【文字与空间排版定位】：${page.layout}。
+【必须印在图上的极简中文文字】：（核心原则：主标题使用大气优雅的纵向毛笔书法字体渲染，副标题使用秀气精致的小字书写在标题旁，配料与克数作为小贴纸或牛皮纸卡片上的精致小字依附在对应碗碟旁。严格控制全图字数在15~20字以内以防止任何乱码拼音，字迹必须绝对清晰对齐）
 ${page.exact_text}`
         });
     });

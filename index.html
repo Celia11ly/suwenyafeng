@@ -58,7 +58,7 @@
 
             <div class="form-group">
                 <label>风格参考（可选：垫图）</label>
-                <p class="field-hint">上传一张您喜欢的排版参考图，或粘贴图片链接，AI 会学习其风格。</p>
+                <p class="field-hint">📸 <b>强烈推荐直接上传排版截图！</b> 网页链接（如小红书链接）因平台防爬虫限制，AI 无法直接读取其图片。上传后，AI 会自动采用「图文分离」高级设计：大段做法和原理会放在文案里，图片上只渲染极简艺术大标题与配料便签，彻底规避文字错乱乱码！</p>
                 <div class="ref-image-area">
                     <div class="ref-upload-zone" id="refUploadZone">
                         <input type="file" id="refImageInput" accept="image/*" hidden>
@@ -70,7 +70,7 @@
                         <button id="removeRefBtn" class="remove-ref-btn hidden" title="移除参考图">✕</button>
                     </div>
                     <div class="ref-url-row">
-                        <input type="text" id="refImageUrl" placeholder="或粘贴图片 URL（如小红书截图链接）">
+                        <input type="text" id="refImageUrl" placeholder="或粘贴图片直接链接（需以 .jpg / .png 结尾，普通网页链接无法读取）">
                     </div>
                 </div>
             </div>
