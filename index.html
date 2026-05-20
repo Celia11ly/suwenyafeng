@@ -58,19 +58,18 @@
 
             <div class="form-group">
                 <label>风格参考（可选：垫图）</label>
-                <p class="field-hint">📸 <b>强烈推荐直接上传排版截图！</b> 网页链接（如小红书链接）因平台防爬虫限制，AI 无法直接读取其图片。上传后，AI 会自动采用「图文分离」高级设计：大段做法和原理会放在文案里，图片上只渲染极简艺术大标题与配料便签，彻底规避文字错乱乱码！</p>
+                <p class="field-hint">📸 <b>强烈推荐直接上传排版截图！</b> 网页链接（如小红书链接）因平台防爬虫限制，AI 无法直接读取其图片。<b>支持批量上传多张图：</b>你可以一次性上传多张截图，AI 会按照顺序让“第1张参考图对应图1、第2张对应图2...”，进行多页一对一高保真像素级复刻！</p>
                 <div class="ref-image-area">
                     <div class="ref-upload-zone" id="refUploadZone">
-                        <input type="file" id="refImageInput" accept="image/*" hidden>
+                        <input type="file" id="refImageInput" accept="image/*" multiple hidden>
                         <div class="upload-placeholder" id="uploadPlaceholder">
                             <svg width="32" height="32" viewBox="0 0 24 24" fill="none"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M17 8l-5-5-5 5M12 3v12" stroke="#A0ABA0" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-                            <span>点击或拖拽上传参考图</span>
+                            <span>点击或拖拽上传多张参考图（支持多选）</span>
                         </div>
-                        <img id="refPreview" class="ref-preview hidden" alt="参考图预览">
-                        <button id="removeRefBtn" class="remove-ref-btn hidden" title="移除参考图">✕</button>
                     </div>
+                    <div id="refPreviewsContainer" class="ref-previews-container hidden"></div>
                     <div class="ref-url-row">
-                        <input type="text" id="refImageUrl" placeholder="或粘贴图片直接链接（需以 .jpg / .png 结尾，普通网页链接无法读取）">
+                        <input type="text" id="refImageUrl" placeholder="或粘贴多张图片直链（每张图片链接用英文逗号或空格隔开，需以 .jpg / .png 结尾）">
                     </div>
                 </div>
             </div>

@@ -12,13 +12,12 @@ document.addEventListener('DOMContentLoaded', () => {
     const imageGallery = $('imageGallery'), customApiSettings = $('customApiSettings');
     const toggleKeyBtn = $('toggleKeyBtn'), toast = $('toast');
     const refUploadZone = $('refUploadZone'), refImageInput = $('refImageInput');
-    const refPreview = $('refPreview'), removeRefBtn = $('removeRefBtn');
     const uploadPlaceholder = $('uploadPlaceholder'), refImageUrl = $('refImageUrl');
     const progressArea = $('progressArea'), progressLabel = $('progressLabel'), progressFill = $('progressFill');
     const downloadAllBtn = $('downloadAllBtn');
 
     let currentTopic = '', currentCount = 4, currentStyle = 'xiaohongshu';
-    let refImageDataUrl = null;
+    let refImageDataUrls = [];
     let generatedImages = [];
     let currentDynamicData = null; // Store LLM generated knowledge
 
@@ -74,10 +73,81 @@ document.addEventListener('DOMContentLoaded', () => {
     refUploadZone.addEventListener('click', () => refImageInput.click());
     refUploadZone.addEventListener('dragover', e => { e.preventDefault(); refUploadZone.classList.add('drag-over'); });
     refUploadZone.addEventListener('dragleave', () => refUploadZone.classList.remove('drag-over'));
-    refUploadZone.addEventListener('drop', e => { e.preventDefault(); refUploadZone.classList.remove('drag-over'); if (e.dataTransfer.files[0]) handleRefFile(e.dataTransfer.files[0]); });
-    refImageInput.addEventListener('change', () => { if (refImageInput.files[0]) handleRefFile(refImageInput.files[0]); });
-    removeRefBtn.addEventListener('click', e => { e.stopPropagation(); refImageDataUrl = null; refPreview.classList.add('hidden'); removeRefBtn.classList.add('hidden'); uploadPlaceholder.style.display = ''; });
-    function handleRefFile(f) { const r = new FileReader(); r.onload = e => { refImageDataUrl = e.target.result; refPreview.src = refImageDataUrl; refPreview.classList.remove('hidden'); removeRefBtn.classList.remove('hidden'); uploadPlaceholder.style.display = 'none'; }; r.readAsDataURL(f); }
+    refUploadZone.addEventListener('drop', e => {
+        e.preventDefault();
+        refUploadZone.classList.remove('drag-over');
+        if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+            handleRefFiles(e.dataTransfer.files);
+        }
+    });
+    refImageInput.addEventListener('change', () => {
+        if (refImageInput.files && refImageInput.files.length > 0) {
+            handleRefFiles(refImageInput.files);
+        }
+    });
+
+    function handleRefFiles(files) {
+        const fileList = Array.from(files);
+        let loadedCount = 0;
+        const imageFiles = fileList.filter(f => f.type.startsWith('image/'));
+        
+        if (imageFiles.length === 0) return;
+        
+        imageFiles.forEach(file => {
+            const r = new FileReader();
+            r.onload = e => {
+                refImageDataUrls.push(e.target.result);
+                loadedCount++;
+                if (loadedCount === imageFiles.length) {
+                    renderRefPreviews();
+                    refImageInput.value = '';
+                }
+            };
+            r.readAsDataURL(file);
+        });
+    }
+
+    function renderRefPreviews() {
+        const container = $('refPreviewsContainer');
+        container.innerHTML = '';
+        
+        if (refImageDataUrls.length === 0) {
+            container.classList.add('hidden');
+            uploadPlaceholder.style.display = '';
+            return;
+        }
+        
+        container.classList.remove('hidden');
+        uploadPlaceholder.style.display = 'none';
+        
+        refImageDataUrls.forEach((dataUrl, idx) => {
+            const item = document.createElement('div');
+            item.className = 'ref-preview-item';
+            
+            const img = document.createElement('img');
+            img.src = dataUrl;
+            
+            const removeBtn = document.createElement('button');
+            removeBtn.className = 'remove-preview-btn';
+            removeBtn.type = 'button';
+            removeBtn.innerHTML = '×';
+            removeBtn.title = '删除此图';
+            removeBtn.addEventListener('click', e => {
+                e.stopPropagation();
+                refImageDataUrls.splice(idx, 1);
+                renderRefPreviews();
+            });
+            
+            const badge = document.createElement('span');
+            badge.className = 'ref-preview-badge';
+            badge.textContent = `图 ${idx + 1}`;
+            
+            item.appendChild(img);
+            item.appendChild(removeBtn);
+            item.appendChild(badge);
+            container.appendChild(item);
+        });
+    }
 
     // ── Model choice ──
     document.querySelectorAll('input[name="modelChoice"]').forEach(r => { r.addEventListener('change', () => { customApiSettings.classList.toggle('hidden', r.value !== 'custom_openai'); }); });
@@ -88,7 +158,28 @@ document.addEventListener('DOMContentLoaded', () => {
         currentTopic = topicInput.value.trim(); if (!currentTopic) return;
         currentCount = parseInt(document.querySelector('input[name="imageCount"]:checked').value);
         currentStyle = document.querySelector('input[name="copyStyle"]:checked').value;
-        const hasRef = !!(refImageDataUrl || refImageUrl.value.trim());
+
+        // Gather all reference images (uploaded base64 images + direct URLs)
+        const refImages = [...refImageDataUrls];
+        const rawUrls = refImageUrl.value.trim();
+        if (rawUrls) {
+            const urls = rawUrls.split(/[\s,]+/).filter(u => u.trim().startsWith('http'));
+            
+            // Check if there are webpage links that are not direct image links
+            const nonDirectUrls = urls.filter(u => {
+                const lower = u.toLowerCase();
+                return lower.includes('xiaohongshu.com') || lower.includes('xhslink.com') || lower.includes('weibo.com') || lower.includes('douyin.com') || (!lower.endsWith('.jpg') && !lower.endsWith('.jpeg') && !lower.endsWith('.png') && !lower.endsWith('.webp') && !lower.endsWith('.gif') && !lower.includes('placeholder') && !lower.includes('data:image'));
+            });
+            
+            if (nonDirectUrls.length > 0) {
+                const confirmMsg = `⚠️ 检测到您在直链接口输入了社交平台网页链接（如：${nonDirectUrls[0]}）而不是直接的图片直链。\n\n由于浏览器的安全跨域限制和平台防爬虫机制，AI 无法直接爬取并读取链接网页内的多张图片。这会导致 AI 无法看见参考图，从而自动退回到【自主设计模式】。\n\n【推荐的完美复刻秘籍】：\n1. 用手机/电脑打开此链接，将笔记中您喜欢的多张图片直接截图或保存；\n2. 批量将这些截图拖拽上传到上方的『垫图区』；\n3. AI 会自动将“截图 1”复刻给“图 1”，“截图 2”复刻给“图 2”，并自动进行视觉智能裁剪（自动忽略右侧侧边栏、作者信息与评论区，100% 还原左半部分主图排版！）；\n\n您是否仍然要强行提交此链接（若强行提交，AI 将无法看见原图）？`;
+                if (!confirm(confirmMsg)) {
+                    return; // Stop generation so they can adjust
+                }
+            }
+            refImages.push(...urls);
+        }
+        const hasRef = refImages.length > 0;
 
         const modelChoice = document.querySelector('input[name="modelChoice"]:checked').value;
         if (modelChoice === 'custom_openai') {
@@ -108,9 +199,8 @@ document.addEventListener('DOMContentLoaded', () => {
         step2.classList.add('hidden');
 
         try {
-            // 1. Fetch dynamic knowledge from selected LLM engine (passing style reference if present)
-            const refImage = hasRef ? (refImageDataUrl || refImageUrl.value.trim()) : null;
-            currentDynamicData = await fetchKnowledgeFromLLM(currentTopic, currentCount, refImage);
+            // 1. Fetch dynamic knowledge from selected LLM engine (passing style reference array if present)
+            currentDynamicData = await fetchKnowledgeFromLLM(currentTopic, currentCount, refImages);
             
             // 2. Build Prompts & Copy using dynamic data
             promptContent.textContent = generatePromptFromData(currentTopic, currentCount, hasRef, currentDynamicData);
