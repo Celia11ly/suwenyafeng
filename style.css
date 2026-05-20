@@ -123,7 +123,7 @@ input::placeholder { color: #A0ABA0; }
 small.hint { display: block; margin-top: 6px; font-size: 12px; color: var(--text-muted); }
 
 /* ── Radio Cards ── */
-.radio-group { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+.radio-group { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
 .radio-card { position: relative; cursor: pointer; }
 .radio-card input { position: absolute; opacity: 0; width: 0; height: 0; }
 .card-content {
@@ -203,6 +203,7 @@ small.hint { display: block; margin-top: 6px; font-size: 12px; color: var(--text
 
 /* ── Image Gallery ── */
 .image-gallery { display: grid; gap: 16px; margin-top: 24px; }
+.image-gallery[data-count="1"] { grid-template-columns: 1fr; max-width: 420px; margin: 24px auto 0; }
 .image-gallery[data-count="4"] { grid-template-columns: repeat(2, 1fr); }
 .image-gallery[data-count="6"] { grid-template-columns: repeat(2, 1fr); }
 .image-gallery[data-count="8"] { grid-template-columns: repeat(2, 1fr); }
