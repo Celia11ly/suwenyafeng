@@ -108,8 +108,9 @@ document.addEventListener('DOMContentLoaded', () => {
         step2.classList.add('hidden');
 
         try {
-            // 1. Fetch dynamic knowledge from selected LLM engine
-            currentDynamicData = await fetchKnowledgeFromLLM(currentTopic, currentCount);
+            // 1. Fetch dynamic knowledge from selected LLM engine (passing style reference if present)
+            const refImage = hasRef ? (refImageDataUrl || refImageUrl.value.trim()) : null;
+            currentDynamicData = await fetchKnowledgeFromLLM(currentTopic, currentCount, refImage);
             
             // 2. Build Prompts & Copy using dynamic data
             promptContent.textContent = generatePromptFromData(currentTopic, currentCount, hasRef, currentDynamicData);

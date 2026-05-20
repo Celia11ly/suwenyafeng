@@ -3,7 +3,7 @@
 // ==========================================
 
 // ── 1. Dynamic Knowledge & Structure Generation ──
-async function fetchKnowledgeFromLLM(topic, count) {
+async function fetchKnowledgeFromLLM(topic, count, refImage) {
     const systemPrompt = `你是一位拥有30年临床经验的中医主任医师，同时也是顶级视觉信息图策划师。
 用户会给出一个大健康或中医主题。你需要根据这个具体主题，量身定制 ${count} 张图文卡片的内容。
 
@@ -41,6 +41,27 @@ async function fetchKnowledgeFromLLM(topic, count) {
             const baseUrl = (document.getElementById('apiBaseUrl')?.value || 'https://api.openai.com/v1').replace(/\/$/, '');
             let textModel = document.getElementById('apiTextModel')?.value || 'doubao-seed-2-0-lite-260428';
             
+            // Build multimodal or standard messages
+            const userContent = [];
+            
+            userContent.push({
+                type: "text",
+                text: `用户主题：${topic}，需要生成 ${count} 张卡片。`
+            });
+
+            if (refImage) {
+                userContent.push({
+                    type: "text",
+                    text: `⚠️【最高优先级风格参考图已被上传】\n请仔细分析用户上传的参考图。你必须在此后的 global_style 和每一页的 layout、exact_text 甚至文字字号层级描述中，深度提取并复刻该参考图的：\n1. 颜色搭配与色调（如米底绿字、深褐复古等）\n2. 空间构图与排版（如文字在左侧占据 40%，图片在右侧占据 60%；标题字体风格等）\n3. 元素密度与艺术媒介风格（如极简主义、杂志内页风、高调摄影、自然采光）。\n请在返回的 JSON 中，用极具描述力的英文写出这些排版风格细节，使生图模型能够生成与参考图高度一致的主题卡片排版。`
+                });
+                userContent.push({
+                    type: "image_url",
+                    image_url: {
+                        url: refImage
+                    }
+                });
+            }
+
             const response = await fetch(`${baseUrl}/chat/completions`, {
                 method: 'POST',
                 headers: {
@@ -51,7 +72,7 @@ async function fetchKnowledgeFromLLM(topic, count) {
                     model: textModel,
                     messages: [
                         { role: "system", content: systemPrompt },
-                        { role: "user", content: `用户主题：${topic}，需要生成 ${count} 张卡片。` }
+                        { role: "user", content: userContent }
                     ],
                     temperature: 0.7
                 })
