@@ -30,16 +30,16 @@ async function fetchKnowledgeFromLLM(topic, count) {
   ]
 }`;
 
-    // Priority 1: Check if user has a custom API configured in the UI
+    const modelChoice = document.querySelector('input[name="modelChoice"]:checked')?.value;
     const apiKey = document.getElementById('apiKey')?.value;
-    if (apiKey && apiKey.trim() !== '' && !apiKey.includes('sk-xxxx')) {
+
+    if (modelChoice === 'custom_openai') {
+        if (!apiKey || apiKey.trim() === '' || apiKey.includes('sk-xxxx')) {
+            throw new Error('您已选择“自定义 API”，但未填写 API Key。请在第一步中填写您的 API Key。');
+        }
         try {
             const baseUrl = (document.getElementById('apiBaseUrl')?.value || 'https://api.openai.com/v1').replace(/\/$/, '');
-            let textModel = document.getElementById('apiTextModel')?.value;
-            
-            if (!textModel) {
-                textModel = 'doubao-seed-2-0-lite-260428';
-            }
+            let textModel = document.getElementById('apiTextModel')?.value || 'doubao-seed-2-0-lite-260428';
             
             const response = await fetch(`${baseUrl}/chat/completions`, {
                 method: 'POST',
@@ -57,17 +57,21 @@ async function fetchKnowledgeFromLLM(topic, count) {
                 })
             });
 
-            if (!response.ok) throw new Error(`Custom API HTTP Error: ${response.status}`);
+            if (!response.ok) {
+                const errData = await response.json().catch(() => ({}));
+                throw new Error(errData.error?.message || `HTTP 错误 ${response.status}`);
+            }
             const data = await response.json();
             let rawContent = data.choices[0].message.content;
             const cleanJson = rawContent.replace(/```json/gi, '').replace(/```/g, '').trim();
             return JSON.parse(cleanJson);
         } catch (e) {
-            console.warn("Custom API Text Generation Failed, falling back to Puter:", e);
+            console.error("Custom API Text Generation Failed:", e);
+            throw new Error(`自定义 API 文本生成失败: ${e.message}。请检查您的 API Key、Base URL 或网络连接。`);
         }
     }
 
-    // Priority 2: Fallback to free Puter.js API
+    // Default to free Puter.js AI
     try {
         const puterPromise = puter.ai.chat(systemPrompt + `\n\n用户主题：${topic}，需要生成 ${count} 张卡片。`);
         const timeoutPromise = new Promise((_, reject) => setTimeout(() => reject(new Error("Puter AI Timeout - 可能弹出了授权窗口，请留意浏览器拦截提示")), 15000));
@@ -77,7 +81,7 @@ async function fetchKnowledgeFromLLM(topic, count) {
         return JSON.parse(cleanJson);
     } catch (e) {
         console.error("LLM Pre-thinking failed:", e);
-        throw new Error(e.message.includes('Timeout') ? "AI思考超时：Puter可能需要您登录授权，或者您可以先在第三步填入您的自定义API Key！" : "AI 中医知识思考失败，请检查网络或配置 API Key。");
+        throw new Error(e.message.includes('Timeout') ? "AI思考超时：Puter可能需要您登录授权，或者您可以选择自定义 API 并填入您的 API Key！" : "AI 中医知识思考失败，请检查网络或选择自定义 API 并配置 API Key。");
     }
 }
 

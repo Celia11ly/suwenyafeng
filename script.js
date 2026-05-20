@@ -44,7 +44,15 @@ document.addEventListener('DOMContentLoaded', () => {
     if (saved.baseUrl) $('apiBaseUrl').value = saved.baseUrl;
     if (saved.textModel) $('apiTextModel').value = saved.textModel;
     if (saved.imageModel) $('apiImageModel').value = saved.imageModel;
-    if (saved.key) $('apiKey').value = saved.key;
+    if (saved.key) {
+        $('apiKey').value = saved.key;
+        // Auto-select custom API since a key is already saved
+        const customRadio = document.querySelector('input[name="modelChoice"][value="custom_openai"]');
+        if (customRadio) {
+            customRadio.checked = true;
+            customApiSettings.classList.remove('hidden');
+        }
+    }
 
     // ── Tab switching ──
     document.querySelectorAll('.tabs').forEach(tg => {
@@ -82,6 +90,17 @@ document.addEventListener('DOMContentLoaded', () => {
         currentStyle = document.querySelector('input[name="copyStyle"]:checked').value;
         const hasRef = !!(refImageDataUrl || refImageUrl.value.trim());
 
+        const modelChoice = document.querySelector('input[name="modelChoice"]:checked').value;
+        if (modelChoice === 'custom_openai') {
+            // Save API settings immediately to localStorage
+            localStorage.setItem('suwen_api', JSON.stringify({
+                baseUrl: $('apiBaseUrl').value,
+                textModel: $('apiTextModel').value,
+                imageModel: $('apiImageModel').value,
+                key: $('apiKey').value
+            }));
+        }
+
         // UI Loading state
         const originalBtnText = generatePromptBtn.querySelector('.btn-text').textContent;
         generatePromptBtn.querySelector('.btn-text').textContent = 'AI中医思考中...';
@@ -89,8 +108,8 @@ document.addEventListener('DOMContentLoaded', () => {
         step2.classList.add('hidden');
 
         try {
-            // 1. Fetch dynamic knowledge from Puter.js LLM
-            currentDynamicData = await fetchKnowledgeFromLLM(currentTopic);
+            // 1. Fetch dynamic knowledge from selected LLM engine
+            currentDynamicData = await fetchKnowledgeFromLLM(currentTopic, currentCount);
             
             // 2. Build Prompts & Copy using dynamic data
             promptContent.textContent = generatePromptFromData(currentTopic, currentCount, hasRef, currentDynamicData);
